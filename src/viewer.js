@@ -6,15 +6,28 @@ import { createStudio } from './studio.js';
 import { MotionDenoiser } from './motion-denoise.js';
 const FINAL_SAMPLES = 192;
 
+// All iOS browsers and desktop Safari use Apple's WebKit shader compiler.
+// three-gpu-pathtracer 0.0.24 clearcoat produces black radiance there (#711).
+// Keep the underlying metal BRDF and the original clearcoat on other engines.
+const APPLE_WEBKIT = /iP(hone|ad|od)/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|OPR|Android/.test(navigator.userAgent));
+
 /** Reusable viewer. All asset paths are resolved relative to the current app. */
 export class RingViewer {
-  constructor(container, { onStatus = () => {}, onInteraction = () => {}, onAutoChange = () => {} } = {}) {
-    this.container = container; this.onStatus = onStatus; this.onInteraction = onInteraction; this.onAutoChange = onAutoChange;
-    this.quality = 'smooth'; this.lighting = 'black'; this.ready = false; this.disposed = false; this.suspended = false;
+  constructor(container, { onStatus = () => {}, onInteraction = () => {} } = {}) {
+    this.container = container; this.onStatus = onStatus; this.onInteraction = onInteraction;
+    this.quality = 'fine'; this.lighting = 'black'; this.ready = false; this.disposed = false; this.suspended = false;
     this.lastChange = 0; this.dirty = true; this.frameCount = 0; this.frameTimes = [];
     this.rasterFrames = 0; this.pathTracedFrames = 0; this.motionTraceFrames = 0;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     this.renderer.setClearColor(0x000000);
+    this.renderer.debug.onShaderError = (gl, program, vertexShader, fragmentShader) => {
+      console.error('Ring shader failed', gl.getProgramInfoLog(program),
+        gl.getShaderInfoLog(vertexShader), gl.getShaderInfoLog(fragmentShader));
+      this.failed = true; this.suspended = true;
+      this.onStatus('精细光影加载失败，请刷新重试；也可查看原片。', 'error');
+    };
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.1;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -30,15 +43,15 @@ export class RingViewer {
     this.controls.enableDamping = false;
     this.controls.enablePan = false; this.controls.rotateSpeed = 0.6; this.controls.zoomSpeed = 0.7;
     this.controls.minDistance = 3.9; this.controls.maxDistance = 14;
-    this.controls.autoRotateSpeed = 0.7;
+    this.controls.autoRotate = false;
     this.controls.addEventListener('change', () => this.invalidate());
-    this.controls.addEventListener('start', () => { this.setAuto(false); this.onInteraction(); });
+    this.controls.addEventListener('start', () => { this.onInteraction(); });
     if (import.meta.env.DEV) this.controls.addEventListener('end', () => {
       this.releasedAt = performance.now(); this.recoveryTimes = {};
     });
     this.keyHandler = e => {
       if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '-', '=', 'Home'].includes(e.key)) return;
-      e.preventDefault(); this.setAuto(false);
+      e.preventDefault();
       if (e.key.startsWith('Arrow')) this.onInteraction();
       const s = new THREE.Spherical().setFromVector3(this.camera.position);
       if (e.key === 'ArrowLeft') s.theta -= 0.12;
@@ -67,10 +80,13 @@ export class RingViewer {
     this.model.traverse(o => {
       if (!o.isMesh) return;
       o.material.envMapIntensity = 1;
+      if (APPLE_WEBKIT && o.material.clearcoat > 0) o.material.clearcoat = 0;
       // Imported colors are scene-linear and remain physically based.
       o.material.side = THREE.FrontSide;
     });
     this.scene.add(this.model); this.scene.updateMatrixWorld(true);
+    await this.prepareFine();
+    if (this.disposed) return;
     this.ready = true; this.invalidate(); this.onStatus('', 'ready');
   }
   resize() {
@@ -96,7 +112,6 @@ export class RingViewer {
     return THREE.MathUtils.clamp(Math.sqrt(480000 / (this.canvas.width * this.canvas.height)), 0.4, 1);
   }
   setView(view) {
-    this.setAuto(false);
     const positions = { hero: [-4.7, 1.9, 6.0], front: [0, 0, 8.2], side: [8.1, 0.6, 0.7] };
     this.camera.position.set(...(positions[view] || positions.hero));
     this.controls.target.set(0, 0, 0); this.controls.update(); this.invalidate();
@@ -104,10 +119,6 @@ export class RingViewer {
   zoom(direction) {
     const distance = THREE.MathUtils.clamp(this.camera.position.length() * (direction > 0 ? 0.85 : 1.18), 3.9, 14);
     this.camera.position.setLength(distance); this.controls.update(); this.invalidate();
-  }
-  setAuto(active) {
-    this.controls.autoRotate = active;
-    this.onAutoChange(active); this.invalidate();
   }
   setLighting(preset) {
     this.lighting = preset;
@@ -119,15 +130,14 @@ export class RingViewer {
     this.motionDenoiser?.reset();
     this.invalidate();
   }
-  async setQuality(quality) {
-    this.quality = quality;
+  async prepareFine() {
     this.lastStatus = null;
     this.motionDenoiser?.reset();
-    if (quality === 'fine' && !this.tracer) {
-      if (!this.renderer.extensions.has('EXT_color_buffer_float')) throw new Error('当前设备不支持精细光影，已保留流畅画质');
+    if (!this.tracer) {
+      if (!this.renderer.extensions.has('EXT_color_buffer_float')) throw new Error('当前设备不支持精细光影，请使用支持 WebGL 2 浮点渲染的浏览器');
       this.onStatus('正在准备精细光影…', 'loading');
       const { WebGLPathTracer, DenoiseMaterial } = await import('three-gpu-pathtracer');
-      if (this.disposed || this.quality !== 'fine') return;
+      if (this.disposed) return;
       this.tracer = new WebGLPathTracer(this.renderer);
       this.tracer.bounces = 6; this.tracer.filterGlossyFactor = 0.3;
       // One full sample per frame: nine tiles previously consumed nine RAF ticks.
@@ -153,7 +163,6 @@ export class RingViewer {
       this.tracer.setScene(this.scene, this.camera);
     }
     this.invalidate();
-    if (quality === 'smooth') this.onStatus('', 'ready');
   }
   renderFineFrame(moving) {
     // Composite both the interactive and accumulating path-traced buffers in
@@ -183,16 +192,18 @@ export class RingViewer {
     this.raf = requestAnimationFrame(this.tick);
     const rawFrameMs = now - (this.lastTick || now);
     const dt = Math.min(0.05, rawFrameMs / 1000); this.lastTick = now;
-    if (this.suspended || document.hidden) return;
+    if (this.failed || this.suspended || document.hidden) return;
     if (import.meta.env.DEV && now - (this.lastDiagnostic || 0) > 1000) {
       this.lastDiagnostic = now; this.canvas.dataset.diagnostics = JSON.stringify(this.diagnostics());
     }
     this.controls.update(dt);
     if (!this.ready) return;
-    const idle = now - this.lastChange > 65 && !this.controls.autoRotate;
-    if (this.quality === 'fine' && this.tracer) {
+    const idle = now - this.lastChange > 65;
+    if (this.tracer) {
       if (!idle || this.tracer.samples < FINAL_SAMPLES || this.dirty) {
-        this.renderFineFrame(!idle); this.dirty = false; this.frameCount++;
+        this.renderFineFrame(!idle);
+        if (this.suspended) return;
+        this.dirty = false; this.frameCount++;
       }
       const samples = Math.floor(this.tracer.samples);
       if (import.meta.env.DEV && this.releasedAt) {
@@ -202,16 +213,13 @@ export class RingViewer {
       }
       const status = this.tracer.isCompiling ? '正在准备精细光影…' : !idle ? '实时精细光影' : samples >= FINAL_SAMPLES ? '精细光影已完成' : `光影细化中 ${Math.min(100, Math.floor(samples / FINAL_SAMPLES * 100))}%`;
       if (status !== this.lastStatus) { this.onStatus(status, 'fine'); this.lastStatus = status; }
-    } else if (this.dirty || this.controls.autoRotate) {
-      this.renderer.render(this.scene, this.camera); this.dirty = false; this.frameCount++;
-      this.rasterFrames++;
     }
-    if (dt > 0 && (this.controls.autoRotate || !idle)) {
+    if (dt > 0 && !idle) {
       this.frameTimes.push(rawFrameMs); if (this.frameTimes.length > 120) this.frameTimes.shift();
     }
   }
   diagnostics() {
-    return { ready: this.ready, quality: this.quality, lighting: this.lighting, samples: this.tracer?.samples || 0,
+    return { ready: this.ready, appleWebKit: APPLE_WEBKIT, quality: this.quality, lighting: this.lighting, samples: this.tracer?.samples || 0,
       triangles: this.renderer.info.render.triangles, calls: this.renderer.info.render.calls, frames: this.frameCount,
       camera: this.camera.position.toArray(), autoRotate: this.controls.autoRotate,
       buffer: [this.canvas.width, this.canvas.height], motionScale: this.tracer?.lowResScale || 0,

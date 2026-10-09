@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-10",
+  "scope": "local only",
+  "reproduction": "Native desktop Safari: completed 192 samples but black model",
+  "singleVariableExperiment": "Only set clearcoat=0; model visible",
+  "finalChange": "Disable clearcoat on iOS/iPadOS and desktop Safari; retain all other rendering parameters. Other engines retain original clearcoat. Shader compile failures stop with error status.",
+  "verified": [
+    "Native desktop Safari initial load",
+    "Native Safari actual drag",
+    "Native Safari warm lighting and zoom",
+    "Native Safari black lighting and reset",
+    "Chromium narrow viewport static fine image",
+    "Chromium console no warning/error",
+    "production build"
+  ],
+  "notVerified": [
+    "Physical iPhone Edge",
+    "Public deployment of current fix"
+  ],
+  "upstream": "https://github.com/gkjohnson/three-gpu-pathtracer/issues/711"
+}

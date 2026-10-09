@@ -20,10 +20,14 @@ for i in range(360):
     center=convert(radial*1.30)
     point,normal,face,dist=bvh.ray_cast(center,-opening,0.4)
     assert point is not None, f'Missing channel back at angle {t}'
-    assert abs(dist-0.165)<0.001, f'Unexpected backing position {dist}'
+    assert abs(dist-0.205)<0.001, f'Unexpected backing position {dist}'
     back_distances.append(dist)
     point,normal,face,dist=bvh.ray_cast(center,opening,0.4)
     assert point is None, f'Channel opening obstructed at angle {t}'
+assert len(beads)==20, f'Expected 20 beads, got {len(beads)}'
+bead_radius=beads[0].dimensions.x/2
+min_neighbor_gap=min((a.location-b.location).length-a.dimensions.x/2-b.dimensions.x/2 for i,a in enumerate(beads) for b in beads[i+1:])
+assert min_neighbor_gap>0, f'Beads intersect: {min_neighbor_gap}'
 min_clearance=100;penetrations=0;sample_count=0
 for bead in beads:
     for vert in list(bead.data.vertices)[::4]:
@@ -33,6 +37,6 @@ for bead in beads:
         if signed < -0.0002:penetrations+=1
         min_clearance=min(min_clearance,signed)
 assert not penetrations, f'{penetrations} sampled bead points are inside gold'
-report={'gold_non_manifold_edges':non_manifold,'closed_back_rays':len(back_distances),'unobstructed_open_face_rays':360,'back_distance_min':min(back_distances),'back_distance_max':max(back_distances),'bead_count':len(beads),'sampled_bead_points':sample_count,'sampled_bead_penetrations':penetrations,'minimum_sampled_bead_clearance':min_clearance,'gold_vertices':len(gold.data.vertices),'gold_polygons':len(gold.data.polygons),'units':'arbitrary relative units; no source CAD dimensions','note':'Closed back rotates with the open channel; no fixed cylindrical liner. These checks do not establish exact reference fidelity or manufacturing readiness.'}
+report={'gold_non_manifold_edges':non_manifold,'closed_back_rays':len(back_distances),'unobstructed_open_face_rays':360,'back_distance_min':min(back_distances),'back_distance_max':max(back_distances),'bead_count':len(beads),'bead_radius':bead_radius,'minimum_neighbor_gap':min_neighbor_gap,'sampled_bead_points':sample_count,'sampled_bead_penetrations':penetrations,'minimum_sampled_bead_clearance':min_clearance,'gold_vertices':len(gold.data.vertices),'gold_polygons':len(gold.data.polygons),'units':'arbitrary relative units; no source CAD dimensions','note':'Closed back rotates with the open channel; no fixed cylindrical liner. These checks do not establish exact reference fidelity or manufacturing readiness.'}
 with open(os.path.join(ROOT,'docs/model-validation.json'),'w') as f:json.dump(report,f,indent=2)
 print(json.dumps(report,indent=2))

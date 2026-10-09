@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-10",
+  "scope": "local only; public version unchanged",
+  "url": "http://localhost:5187/",
+  "reference": "Original 750x750 video, compared multiple rotation frames",
+  "model": {
+    "old_bead_count": 26,
+    "new_bead_count": 20,
+    "old_radius": 0.155,
+    "new_radius": 0.195,
+    "diameter_increase_percent": 25.806,
+    "channel_inner_radius": 0.205,
+    "channel_outer_radius": 0.25
+  },
+  "rendering": "Fine only on all screen sizes, 192 samples; automatic rotation removed",
+  "browser": "Codex in-app browser via CUA",
+  "viewports": [
+    [
+      1280,
+      900
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "checks": {
+    "page_identity": "pass",
+    "not_blank": "pass",
+    "error_overlay": "none",
+    "console_errors_or_warnings": [],
+    "quality_buttons": 0,
+    "auto_rotation_buttons": 0,
+    "mobile_scroll_width": 390,
+    "fine_completed_desktop_and_mobile": true,
+    "drag_rotation": "pass; preset deselected and lighting accumulated at released pose",
+    "keyboard_rotation": "pass",
+    "zoom_and_lighting": "pass",
+    "reference_video": "pass; readyState 4, 750x750"
+  },
+  "physical_phone_tested": false,
+  "model_validation": "docs/model-validation.json",
+  "screenshot": "bead-revision-desktop.png",
+  "note": "Bead count and dimensions are visual reconstruction choices, not dimensions recovered from CAD."
+}

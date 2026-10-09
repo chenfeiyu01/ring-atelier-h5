@@ -23,7 +23,7 @@ def material(name, color, metal, rough):
 
 gold = material('Pale champagne gold', (0.88, 0.81, 0.56), 1, 0.09)
 silver = material('Polished silver beads', (0.66, 0.68, 0.71), 0.84, 0.24)
-RADIUS, COUNT = 1.30, 26
+RADIUS, COUNT, BEAD_RADIUS = 1.30, 20, 0.195
 
 def convert(p): return (p[0], -p[2], p[1])
 
@@ -34,7 +34,7 @@ def solid_flowing_channel():
     """
     verts,faces=[],[]
     n,arc_steps=640,72
-    inner_radius,outer_radius=0.165,0.210
+    inner_radius,outer_radius=0.205,0.250
     half_opening=1.18
     first=math.pi/2+half_opening
     last=math.pi/2-half_opening+2*math.pi
@@ -88,7 +88,7 @@ solid_flowing_channel()
 for i in range(COUNT):
     t=2*math.pi*i/COUNT
     pos=convert((RADIUS*math.cos(t),RADIUS*math.sin(t),0))
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=0.155, location=pos)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=BEAD_RADIUS, location=pos)
     obj=bpy.context.object; obj.name=f'Silver bead {i+1:02d}'
     obj.data.materials.append(silver)
     for poly in obj.data.polygons: poly.use_smooth=True
@@ -117,4 +117,4 @@ scene=bpy.context.scene;scene.camera=cam;scene.render.engine='CYCLES';scene.cycl
 scene.render.resolution_x=1000;scene.render.resolution_y=1000;scene.render.resolution_percentage=100
 scene.view_settings.view_transform='AgX'
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(ROOT,'models/ring.blend'))
-print('Exported ring: 1 turning channel with solid backing, 26 silver beads. Visual approximation only.')
+print('Exported ring: 1 turning channel with solid backing, 20 larger silver beads. Visual approximation only.')

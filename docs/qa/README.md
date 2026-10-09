@@ -25,3 +25,12 @@
 - Blender 检查：金色网格没有 non-manifold 边；360 个背面射线命中、360 个开口射线畅通；12,922 个珠面采样点没有穿模。见 ../model-validation.json。
 
 尚未验证实体手机双指手势、iOS/Android GPU 性能和发热；未发布公网。最终视觉验收仍由用户判断。
+
+## 2026-10-10 本地大珠版本
+
+珠子 26 → 20，半径 0.155 → 0.195；去掉画质选项和自动旋转，仅精细模式。模型重新校验：20 颗珠子无相互重叠，9,940 个抽样点未穿入戒托。1280×900 与 390×844 本地浏览器检查通过，拖拽、键盘、灯光、缩放和原片弹窗正常，无应用警告或错误。未发布公网，未进行实体手机测试。详情见 bead-revision.json；旧截图和性能记录属于各自的历史版本。
+
+
+2026-10-10 Apple 浏览器兼容修复（仅本地）：在桌面 Safari 真实复现“192 样本完成但模型全黑”，只关闭 imported material 的 clearcoat 后恢复，定位到 three-gpu-pathtracer 0.0.24 的清漆路径；上游同类记录 https://github.com/gkjohnson/three-gpu-pathtracer/issues/711 。对 iPhone/iPad 浏览器与桌面 Safari 绕过 clearcoat，其余金属参数、192 样本、六次反弹和时序重建不变；其他引擎继续原清漆参数。增加着色器错误处理，编译失败时停止并显示失败，不再显示完成。桌面 Safari 的加载、拖拽、暖金光、放大及重置复测通过；Chromium 的原材质静止画面和控制台检查通过。iPhone Edge 真机尚未验证；公网仍是旧版本，未发布此次修改。
+
+证据：apple-webkit-compat.json、safari-black-before.png、safari-fine-after.png。
