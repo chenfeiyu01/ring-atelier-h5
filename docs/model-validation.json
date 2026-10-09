@@ -1,0 +1,15 @@
+{
+  "gold_non_manifold_edges": 0,
+  "closed_back_rays": 360,
+  "unobstructed_open_face_rays": 360,
+  "back_distance_min": 0.16495147347450256,
+  "back_distance_max": 0.16500842571258545,
+  "bead_count": 26,
+  "sampled_bead_points": 12922,
+  "sampled_bead_penetrations": 0,
+  "minimum_sampled_bead_clearance": 0.009989010613168148,
+  "gold_vertices": 104960,
+  "gold_polygons": 104960,
+  "units": "arbitrary relative units; no source CAD dimensions",
+  "note": "Closed back rotates with the open channel; no fixed cylindrical liner. These checks do not establish exact reference fidelity or manufacturing readiness."
+}

@@ -1,0 +1,232 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { createStudio } from './studio.js';
+import { MotionDenoiser } from './motion-denoise.js';
+const FINAL_SAMPLES = 192;
+
+/** Reusable viewer. All asset paths are resolved relative to the current app. */
+export class RingViewer {
+  constructor(container, { onStatus = () => {}, onInteraction = () => {}, onAutoChange = () => {} } = {}) {
+    this.container = container; this.onStatus = onStatus; this.onInteraction = onInteraction; this.onAutoChange = onAutoChange;
+    this.quality = 'smooth'; this.lighting = 'black'; this.ready = false; this.disposed = false; this.suspended = false;
+    this.lastChange = 0; this.dirty = true; this.frameCount = 0; this.frameTimes = [];
+    this.rasterFrames = 0; this.pathTracedFrames = 0; this.motionTraceFrames = 0;
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+    this.renderer.setClearColor(0x000000);
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.1;
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.canvas = this.renderer.domElement;
+    this.canvas.setAttribute('aria-label', '戒指三维模型：拖拽旋转，双指或滚轮缩放，也可用方向键旋转');
+    this.canvas.tabIndex = 0;
+    container.append(this.canvas);
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x000000);
+    this.camera = new THREE.PerspectiveCamera(32, 1, 0.1, 80);
+    this.controls = new OrbitControls(this.camera, this.canvas);
+    // Accumulate immediately at the released pose instead of resetting through a long inertial tail.
+    this.controls.enableDamping = false;
+    this.controls.enablePan = false; this.controls.rotateSpeed = 0.6; this.controls.zoomSpeed = 0.7;
+    this.controls.minDistance = 3.9; this.controls.maxDistance = 14;
+    this.controls.autoRotateSpeed = 0.7;
+    this.controls.addEventListener('change', () => this.invalidate());
+    this.controls.addEventListener('start', () => { this.setAuto(false); this.onInteraction(); });
+    if (import.meta.env.DEV) this.controls.addEventListener('end', () => {
+      this.releasedAt = performance.now(); this.recoveryTimes = {};
+    });
+    this.keyHandler = e => {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '-', '=', 'Home'].includes(e.key)) return;
+      e.preventDefault(); this.setAuto(false);
+      if (e.key.startsWith('Arrow')) this.onInteraction();
+      const s = new THREE.Spherical().setFromVector3(this.camera.position);
+      if (e.key === 'ArrowLeft') s.theta -= 0.12;
+      if (e.key === 'ArrowRight') s.theta += 0.12;
+      if (e.key === 'ArrowUp') s.phi -= 0.12;
+      if (e.key === 'ArrowDown') s.phi += 0.12;
+      if (e.key === '+' || e.key === '=') s.radius *= 0.9;
+      if (e.key === '-') s.radius *= 1.1;
+      s.makeSafe(); s.radius = THREE.MathUtils.clamp(s.radius, this.controls.minDistance, this.controls.maxDistance);
+      this.camera.position.setFromSpherical(s); this.controls.update();
+      if (e.key === 'Home') this.setView('hero');
+    };
+    this.canvas.addEventListener('keydown', this.keyHandler);
+    this.lostHandler = e => { e.preventDefault(); this.suspended = true; this.onStatus('画面暂时中断，请刷新后重试', 'error'); };
+    this.canvas.addEventListener('webglcontextlost', this.lostHandler);
+    this.observer = new ResizeObserver(() => this.resize()); this.observer.observe(container);
+    this.setView('hero'); this.resize(); this.setLighting('black');
+    this.tick = this.tick.bind(this); this.raf = requestAnimationFrame(this.tick);
+  }
+  async load() {
+    this.onStatus('正在加载戒指…', 'loading');
+    const gltf = await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/ring.glb`);
+    if (this.disposed) return;
+    this.model = gltf.scene;
+    this.model.rotation.z = -0.23;
+    this.model.traverse(o => {
+      if (!o.isMesh) return;
+      o.material.envMapIntensity = 1;
+      // Imported colors are scene-linear and remain physically based.
+      o.material.side = THREE.FrontSide;
+    });
+    this.scene.add(this.model); this.scene.updateMatrixWorld(true);
+    this.ready = true; this.invalidate(); this.onStatus('', 'ready');
+  }
+  resize() {
+    const { width, height } = this.container.getBoundingClientRect();
+    if (!width || !height) return;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8, Math.sqrt(2200000 / (width * height))));
+    this.renderer.setSize(width, height);
+    if (this.fineTarget) this.fineTarget.setSize(this.canvas.width, this.canvas.height);
+    this.motionDenoiser?.resize(this.canvas.width, this.canvas.height);
+    if (this.tracer) this.tracer.lowResScale = this.motionResolutionScale();
+    this.camera.aspect = width / height;
+    // Preserve comfortable margins in tall and narrow H5 containers.
+    this.camera.fov = width / height < 0.85 ? 36 : 32;
+    this.camera.updateProjectionMatrix(); this.invalidate();
+  }
+  invalidate() {
+    this.lastChange = performance.now(); this.dirty = true;
+    if (this.tracer) this.tracer.updateCamera();
+  }
+  motionResolutionScale() {
+    // Keep the same six-bounce light transport while reducing the number of
+    // traced pixels during interaction. Full resolution still converges at rest.
+    return THREE.MathUtils.clamp(Math.sqrt(480000 / (this.canvas.width * this.canvas.height)), 0.4, 1);
+  }
+  setView(view) {
+    this.setAuto(false);
+    const positions = { hero: [-4.7, 1.9, 6.0], front: [0, 0, 8.2], side: [8.1, 0.6, 0.7] };
+    this.camera.position.set(...(positions[view] || positions.hero));
+    this.controls.target.set(0, 0, 0); this.controls.update(); this.invalidate();
+  }
+  zoom(direction) {
+    const distance = THREE.MathUtils.clamp(this.camera.position.length() * (direction > 0 ? 0.85 : 1.18), 3.9, 14);
+    this.camera.position.setLength(distance); this.controls.update(); this.invalidate();
+  }
+  setAuto(active) {
+    this.controls.autoRotate = active;
+    this.onAutoChange(active); this.invalidate();
+  }
+  setLighting(preset) {
+    this.lighting = preset;
+    this.environments ||= new Map();
+    if (!this.environments.has(preset)) this.environments.set(preset, createStudio(preset));
+    this.scene.environment = this.environments.get(preset);
+    this.scene.background.set(preset === 'soft' ? 0x171717 : 0x000000);
+    if (this.tracer) this.tracer.updateEnvironment();
+    this.motionDenoiser?.reset();
+    this.invalidate();
+  }
+  async setQuality(quality) {
+    this.quality = quality;
+    this.lastStatus = null;
+    this.motionDenoiser?.reset();
+    if (quality === 'fine' && !this.tracer) {
+      if (!this.renderer.extensions.has('EXT_color_buffer_float')) throw new Error('当前设备不支持精细光影，已保留流畅画质');
+      this.onStatus('正在准备精细光影…', 'loading');
+      const { WebGLPathTracer, DenoiseMaterial } = await import('three-gpu-pathtracer');
+      if (this.disposed || this.quality !== 'fine') return;
+      this.tracer = new WebGLPathTracer(this.renderer);
+      this.tracer.bounces = 6; this.tracer.filterGlossyFactor = 0.3;
+      // One full sample per frame: nine tiles previously consumed nine RAF ticks.
+      this.tracer.tiles.set(1, 1); this.tracer.renderDelay = 0; this.tracer.fadeDuration = 80;
+      this.tracer.minSamples = 1; this.tracer.renderScale = 1;
+      this.tracer.dynamicLowRes = true;
+      this.tracer.lowResScale = this.motionResolutionScale();
+      // Independent samples allow temporal history to remove noise while moving.
+      this.tracer.stableNoise = false;
+      this.tracer.rasterizeScene = false;
+      // The library also invokes this callback during shader compilation.
+      // Retain the last frame then; never switch the fine mode to raster lighting.
+      this.tracer.rasterizeSceneCallback = () => {};
+      this.tracer.textureSize.set(512, 512);
+      this.fineTarget = new THREE.WebGLRenderTarget(this.canvas.width, this.canvas.height, {
+        type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+        depthBuffer: false, stencilBuffer: false,
+      });
+      this.fineTarget.texture.colorSpace = THREE.LinearSRGBColorSpace;
+      this.motionDenoiser = new MotionDenoiser(this.model, this.canvas.width, this.canvas.height);
+      this.denoiseMaterial = new DenoiseMaterial({ sigma: 2, kSigma: 1, threshold: 0.14 });
+      this.denoiseQuad = new FullScreenQuad(this.denoiseMaterial);
+      this.tracer.setScene(this.scene, this.camera);
+    }
+    this.invalidate();
+    if (quality === 'smooth') this.onStatus('', 'ready');
+  }
+  renderFineFrame(moving) {
+    // Composite both the interactive and accumulating path-traced buffers in
+    // linear HDR, then denoise and tone-map once. The library's low-res preview
+    // bypasses renderToCanvasCallback, so a final pass must cover both buffers.
+    const previousTarget = this.renderer.getRenderTarget();
+    // The dynamic low-resolution tracer still runs; avoid tracing both buffers during movement.
+    this.tracer.pausePathTracing = moving;
+    this.renderer.setRenderTarget(this.fineTarget);
+    this.tracer.renderSample();
+    this.renderer.setRenderTarget(previousTarget);
+    if (this.tracer.isCompiling) return;
+    if (this.tracer.samples < 16) {
+      this.motionDenoiser.render(this.renderer, this.camera, this.fineTarget.texture,
+        this.scene.background, this.tracer.lowResScale);
+    } else {
+      // Use the original full-resolution radiance directly for the settled image.
+      this.denoiseMaterial.map = this.tracer.target.texture;
+      this.denoiseQuad.render(this.renderer);
+      this.motionDenoiser.seed(this.renderer, this.camera, this.tracer.target.texture, this.tracer.samples);
+    }
+    this.pathTracedFrames++;
+    if (moving) this.motionTraceFrames++;
+  }
+  tick(now) {
+    if (this.disposed) return;
+    this.raf = requestAnimationFrame(this.tick);
+    const rawFrameMs = now - (this.lastTick || now);
+    const dt = Math.min(0.05, rawFrameMs / 1000); this.lastTick = now;
+    if (this.suspended || document.hidden) return;
+    if (import.meta.env.DEV && now - (this.lastDiagnostic || 0) > 1000) {
+      this.lastDiagnostic = now; this.canvas.dataset.diagnostics = JSON.stringify(this.diagnostics());
+    }
+    this.controls.update(dt);
+    if (!this.ready) return;
+    const idle = now - this.lastChange > 65 && !this.controls.autoRotate;
+    if (this.quality === 'fine' && this.tracer) {
+      if (!idle || this.tracer.samples < FINAL_SAMPLES || this.dirty) {
+        this.renderFineFrame(!idle); this.dirty = false; this.frameCount++;
+      }
+      const samples = Math.floor(this.tracer.samples);
+      if (import.meta.env.DEV && this.releasedAt) {
+        for (const milestone of [1, 4, 8, 16, 24, 32, FINAL_SAMPLES]) {
+          if (samples >= milestone && !this.recoveryTimes[milestone]) this.recoveryTimes[milestone] = Math.round(now - this.releasedAt);
+        }
+      }
+      const status = this.tracer.isCompiling ? '正在准备精细光影…' : !idle ? '实时精细光影' : samples >= FINAL_SAMPLES ? '精细光影已完成' : `光影细化中 ${Math.min(100, Math.floor(samples / FINAL_SAMPLES * 100))}%`;
+      if (status !== this.lastStatus) { this.onStatus(status, 'fine'); this.lastStatus = status; }
+    } else if (this.dirty || this.controls.autoRotate) {
+      this.renderer.render(this.scene, this.camera); this.dirty = false; this.frameCount++;
+      this.rasterFrames++;
+    }
+    if (dt > 0 && (this.controls.autoRotate || !idle)) {
+      this.frameTimes.push(rawFrameMs); if (this.frameTimes.length > 120) this.frameTimes.shift();
+    }
+  }
+  diagnostics() {
+    return { ready: this.ready, quality: this.quality, lighting: this.lighting, samples: this.tracer?.samples || 0,
+      triangles: this.renderer.info.render.triangles, calls: this.renderer.info.render.calls, frames: this.frameCount,
+      camera: this.camera.position.toArray(), autoRotate: this.controls.autoRotate,
+      buffer: [this.canvas.width, this.canvas.height], motionScale: this.tracer?.lowResScale || 0,
+      rasterFrames: this.rasterFrames, pathTracedFrames: this.pathTracedFrames, motionTraceFrames: this.motionTraceFrames,
+      recoveryTimes: this.recoveryTimes || {},
+      temporalFrames: this.motionDenoiser?.temporalFrames || 0,
+      historySeeds: this.motionDenoiser?.seedFrames || 0,
+      averageFrameMs: this.frameTimes.reduce((a,b)=>a+b,0) / (this.frameTimes.length || 1) };
+  }
+  dispose() {
+    this.disposed = true; cancelAnimationFrame(this.raf); this.observer.disconnect(); this.controls.dispose();
+    this.canvas.removeEventListener('keydown', this.keyHandler); this.canvas.removeEventListener('webglcontextlost', this.lostHandler);
+    this.tracer?.dispose(); this.fineTarget?.dispose(); this.motionDenoiser?.dispose(); this.denoiseMaterial?.dispose(); this.denoiseQuad?.dispose(); this.environments?.forEach(x=>x.dispose());
+    const geometries = new Set(), materials = new Set();
+    this.scene.traverse(o => { if (o.isMesh) { geometries.add(o.geometry); materials.add(o.material); } });
+    geometries.forEach(g=>g.dispose()); materials.forEach(m=>m.dispose()); this.renderer.dispose(); this.canvas.remove();
+  }
+}

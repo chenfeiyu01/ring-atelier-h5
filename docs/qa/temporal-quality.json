@@ -1,0 +1,153 @@
+{
+  "environment": "Current Mac, desktop Codex browser, 1280x720 viewport, 848x597 render buffer, devicePixelRatio 1",
+  "interaction": "Real pointer drag, full 192-sample convergence; moving mode uses geometric reprojection",
+  "recovery": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 770,
+    "camera": [
+      -6.705098200077318,
+      2.9354387639960193,
+      2.8504135472154304
+    ],
+    "autoRotate": false,
+    "buffer": [
+      848,
+      597
+    ],
+    "motionScale": 0.9737232209257125,
+    "rasterFrames": 1,
+    "pathTracedFrames": 768,
+    "motionTraceFrames": 31,
+    "recoveryTimes": {
+      "1": 66,
+      "4": 107,
+      "8": 187,
+      "16": 347,
+      "24": 535,
+      "32": 722,
+      "192": 4546
+    },
+    "temporalFrames": 100,
+    "historySeeds": 668,
+    "averageFrameMs": 48.272727272727145
+  },
+  "continuousRotation": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 2924,
+    "camera": [
+      7.4802815333665285,
+      1.8999999999999988,
+      1.461296746583537
+    ],
+    "autoRotate": true,
+    "buffer": [
+      848,
+      597
+    ],
+    "motionScale": 0.9737232209257125,
+    "rasterFrames": 1,
+    "pathTracedFrames": 2922,
+    "motionTraceFrames": 1993,
+    "recoveryTimes": {
+      "1": 66,
+      "4": 107,
+      "8": 187,
+      "16": 347,
+      "24": 535,
+      "32": 722,
+      "192": 4546
+    },
+    "temporalFrames": 2077,
+    "historySeeds": 845,
+    "averageFrameMs": 23.401666666666763
+  },
+  "staticReference": "work/realtime-qa/before-static.png from the original 192-sample renderer; same viewport and camera",
+  "staticComparisonMeanAbsRgb8bit": 2.0860317996658595,
+  "limitations": [
+    "Measurements are not physical phone performance",
+    "Fast movement and newly exposed surfaces can still have sample noise",
+    "Screenshot difference is not a substitute for user visual acceptance"
+  ],
+  "resizeRegression": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 1896,
+    "camera": [
+      0.059168464889562136,
+      1.899999999999999,
+      -7.621449933756866
+    ],
+    "autoRotate": true,
+    "buffer": [
+      848,
+      668
+    ],
+    "motionScale": 0.9205226124401061,
+    "rasterFrames": 1,
+    "pathTracedFrames": 1894,
+    "motionTraceFrames": 1871,
+    "recoveryTimes": {},
+    "temporalFrames": 1886,
+    "historySeeds": 8,
+    "targets": {
+      "boundTarget": null,
+      "viewport": [
+        0,
+        0,
+        848,
+        668
+      ],
+      "radiance": {
+        "size": [
+          848,
+          668
+        ],
+        "peak": 1.5556640625,
+        "lit": 69800,
+        "alpha": 566464
+      },
+      "guide": {
+        "size": [
+          848,
+          668
+        ],
+        "peak": 0.998046875,
+        "lit": 73692,
+        "alpha": 74037
+      },
+      "history": {
+        "size": [
+          848,
+          668
+        ],
+        "peak": 1.19140625,
+        "lit": 71964,
+        "alpha": 74037
+      },
+      "filtered": {
+        "size": [
+          848,
+          668
+        ],
+        "peak": 1.1806640625,
+        "lit": 72470,
+        "alpha": 566464
+      }
+    },
+    "averageFrameMs": 31.65
+  }
+}

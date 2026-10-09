@@ -1,0 +1,182 @@
+{
+  "desktopAuto": {
+    "ready": true,
+    "quality": "smooth",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 313088,
+    "calls": 27,
+    "frames": 3123,
+    "camera": [
+      -6.982852040628383,
+      1.899999999999999,
+      -3.054468428170759
+    ],
+    "autoRotate": true,
+    "buffer": [
+      1104,
+      792
+    ],
+    "averageFrameMs": 13.372499999999976
+  },
+  "desktopDragged": {
+    "ready": true,
+    "quality": "smooth",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 313088,
+    "calls": 27,
+    "frames": 3276,
+    "camera": [
+      -6.909346994371513,
+      3.643321041180329,
+      0.8289366093145204
+    ],
+    "autoRotate": false,
+    "buffer": [
+      1104,
+      792
+    ],
+    "averageFrameMs": 13.370833333333334
+  },
+  "desktopZoomed": {
+    "ready": true,
+    "quality": "smooth",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 313088,
+    "calls": 27,
+    "frames": 3277,
+    "camera": [
+      -5.872944944249675,
+      3.0968228927241745,
+      0.7045960920352429
+    ],
+    "autoRotate": false,
+    "buffer": [
+      1104,
+      792
+    ],
+    "averageFrameMs": 13.370833333333454
+  },
+  "soft": {
+    "ready": true,
+    "quality": "smooth",
+    "lighting": "soft",
+    "samples": 0,
+    "triangles": 313100,
+    "calls": 28,
+    "frames": 3281,
+    "camera": [
+      -4.699999999999998,
+      1.8999999999999992,
+      5.9999999999999964
+    ],
+    "autoRotate": false,
+    "buffer": [
+      1104,
+      792
+    ],
+    "averageFrameMs": 13.594999999999951
+  },
+  "video": {
+    "currentTime": 2.494002,
+    "error": null,
+    "height": 750,
+    "paused": false,
+    "width": 750
+  },
+  "mobileLayout": {
+    "canvas": {
+      "bottom": 560.03125,
+      "height": 443.03125,
+      "left": 1,
+      "right": 389,
+      "top": 117,
+      "width": 388,
+      "x": 1,
+      "y": 117
+    },
+    "height": 844,
+    "scrollHeight": 994,
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "mobileBefore": {
+    "ready": true,
+    "quality": "smooth",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 313100,
+    "calls": 28,
+    "frames": 1,
+    "camera": [
+      -4.699999999999998,
+      1.8999999999999992,
+      5.9999999999999964
+    ],
+    "autoRotate": false,
+    "buffer": [
+      388,
+      443
+    ],
+    "averageFrameMs": 13.373529411764707
+  },
+  "mobileDragged": {
+    "ready": true,
+    "quality": "smooth",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 313088,
+    "calls": 27,
+    "frames": 78,
+    "camera": [
+      -6.71137769813125,
+      3.4664627141504996,
+      2.1543086233013886
+    ],
+    "autoRotate": false,
+    "buffer": [
+      388,
+      443
+    ],
+    "averageFrameMs": 13.377499999999994
+  },
+  "mobileFine": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 1769,
+    "camera": [
+      -3.947927344779652,
+      1.8999999999999986,
+      6.519499189381113
+    ],
+    "autoRotate": false,
+    "buffer": [
+      388,
+      443
+    ],
+    "averageFrameMs": 28.647887323943653
+  },
+  "embed": {
+    "canvas": {
+      "bottom": 644,
+      "height": 644,
+      "left": 0,
+      "right": 1280,
+      "top": 0,
+      "width": 1280,
+      "x": 0,
+      "y": 0
+    },
+    "headerVisible": "none",
+    "height": 720,
+    "scrollHeight": 720,
+    "scrollWidth": 1280,
+    "width": 1280
+  }
+}

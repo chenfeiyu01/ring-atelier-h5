@@ -1,0 +1,177 @@
+{
+  "environment": "Current Mac, Codex desktop browser, devicePixelRatio 1; not a physical phone",
+  "method": "Real pointer drag; performance.now elapsed from OrbitControls end to sample milestones; same camera for baseline and 1280x900 optimized screenshot",
+  "baseline1280": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 3539,
+    "camera": [
+      -6.582796446756405,
+      2.8292430149354844,
+      3.219033224899968
+    ],
+    "autoRotate": false,
+    "buffer": [
+      848,
+      668
+    ],
+    "motionScale": 0.677486298759867,
+    "rasterFrames": 1,
+    "pathTracedFrames": 3537,
+    "motionTraceFrames": 110,
+    "recoveryTimes": {
+      "1": 1414,
+      "4": 1776,
+      "8": 2257,
+      "16": 3220,
+      "24": 4182,
+      "32": 5146,
+      "64": 8997,
+      "192": 24416
+    },
+    "averageFrameMs": 22.611504424778772
+  },
+  "optimized1280": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 48,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 112,
+    "camera": [
+      -6.582796446756406,
+      2.8292430149354924,
+      3.2190332248999614
+    ],
+    "autoRotate": false,
+    "buffer": [
+      848,
+      668
+    ],
+    "motionScale": 0.677486298759867,
+    "rasterFrames": 1,
+    "pathTracedFrames": 110,
+    "motionTraceFrames": 14,
+    "recoveryTimes": {
+      "1": 61,
+      "4": 101,
+      "8": 155,
+      "16": 329,
+      "24": 516,
+      "32": 690,
+      "48": 1051
+    },
+    "averageFrameMs": 71.55882352941124
+  },
+  "optimized1536": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 48,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 111,
+    "camera": [
+      -6.385378318440256,
+      2.686274057820058,
+      3.702819927659988
+    ],
+    "autoRotate": false,
+    "buffer": [
+      1104,
+      792
+    ],
+    "motionScale": 0.545305083704669,
+    "rasterFrames": 1,
+    "pathTracedFrames": 109,
+    "motionTraceFrames": 13,
+    "recoveryTimes": {
+      "1": 66,
+      "4": 106,
+      "8": 159,
+      "16": 427,
+      "24": 667,
+      "32": 908,
+      "48": 1376
+    },
+    "averageFrameMs": 18.424999999999955
+  },
+  "autoRotate1536": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 0,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 2366,
+    "camera": [
+      7.19060083609924,
+      2.686274057820058,
+      -1.6670906700511916
+    ],
+    "autoRotate": true,
+    "buffer": [
+      1104,
+      792
+    ],
+    "motionScale": 0.545305083704669,
+    "rasterFrames": 1,
+    "pathTracedFrames": 2364,
+    "motionTraceFrames": 2268,
+    "recoveryTimes": {
+      "1": 66,
+      "4": 106,
+      "8": 159,
+      "16": 427,
+      "24": 667,
+      "32": 908,
+      "48": 1376
+    },
+    "averageFrameMs": 21.284166666666593
+  },
+  "mobileSize390": {
+    "ready": true,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 48,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 2515,
+    "camera": [
+      -6.521633000003491,
+      3.5263202857743456,
+      2.5948734565295584
+    ],
+    "autoRotate": false,
+    "buffer": [
+      388,
+      443
+    ],
+    "motionScale": 0.75,
+    "rasterFrames": 1,
+    "pathTracedFrames": 2513,
+    "motionTraceFrames": 2311,
+    "recoveryTimes": {
+      "1": 62,
+      "4": 102,
+      "8": 156,
+      "16": 262,
+      "24": 369,
+      "32": 476,
+      "48": 690
+    },
+    "averageFrameMs": 20.058333333333334
+  },
+  "imageComparison": {
+    "comparison": "old 192 samples vs optimized 48 samples, identical camera and viewport, ring region only",
+    "channels": 163113,
+    "mean_abs_error_8bit": 2.499,
+    "rmse_8bit": 4.968,
+    "p95_abs_error_8bit": 10
+  }
+}
