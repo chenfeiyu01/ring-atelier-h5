@@ -22,6 +22,7 @@ document.querySelector('#app').innerHTML = `
   </section>
   <aside class="inspector" aria-label="展示设置">
     <div class="intro"><h1>一环之间</h1><p>转动，发现每一面。</p></div>
+    <div class="setting inlay-setting"><h2>镶嵌</h2><div class="inlay-options" role="group" aria-label="镶嵌材质"><button data-inlay="silver" class="selected" aria-pressed="true">银珠</button><button data-inlay="diamond" aria-pressed="false">钻石</button></div></div>
     <div class="setting lighting-setting"><h2>光影</h2><div class="light-options" role="group" aria-label="光影环境"><button data-light="black" class="light-choice selected" aria-pressed="true"><span class="swatch swatch-black"></span><span>经典黑</span></button><button data-light="soft" class="light-choice" aria-pressed="false"><span class="swatch swatch-soft"></span><span>柔光棚</span></button><button data-light="warm" class="light-choice" aria-pressed="false"><span class="swatch swatch-warm"></span><span>暖金光</span></button></div></div>
     <div class="setting view-setting"><h2>视角</h2><div class="view-options" role="group" aria-label="预设视角"><button data-view="hero" class="selected" aria-pressed="true">立体</button><button data-view="front" aria-pressed="false">正面</button><button data-view="side" aria-pressed="false">侧面</button></div></div>
   </aside>
@@ -51,6 +52,17 @@ $('#zoom-out').onclick = () => viewer?.zoom(-1);
 $('#reset').onclick = () => { viewer?.setView('hero'); setSelected('[data-view]', $('[data-view="hero"]')); };
 document.querySelectorAll('[data-light]').forEach(b => b.onclick = () => { viewer?.setLighting(b.dataset.light); setSelected('[data-light]', b); });
 document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { viewer?.setView(b.dataset.view); setSelected('[data-view]', b); });
+document.querySelectorAll('[data-inlay]').forEach(b => b.onclick = async () => {
+  const buttons = document.querySelectorAll('[data-inlay]');
+  buttons.forEach(x => { x.disabled = true; });
+  try {
+    await viewer?.setInlay(b.dataset.inlay);
+    setSelected('[data-inlay]', $(`[data-inlay="${viewer.inlay}"]`));
+  } catch (error) {
+    console.error(error);
+    $('#render-status').textContent = '切换暂时失败，请重试。';
+  } finally { buttons.forEach(x => { x.disabled = false; }); }
+});
 const dialog = $('#reference-dialog'), video = $('#reference-video');
 $('#reference').onclick = () => { if (viewer) viewer.suspended=true; dialog.showModal(); video.play().catch(()=>{}); };
 $('#close-dialog').onclick = () => dialog.close();
@@ -59,4 +71,3 @@ dialog.addEventListener('close', () => { video.pause(); if (viewer) {viewer.susp
 window.addEventListener('pagehide', () => { if (viewer) viewer.suspended=true; });
 window.addEventListener('pageshow', () => { if (viewer) {viewer.suspended=false;viewer.invalidate();} });
 if (import.meta.hot) import.meta.hot.dispose(() => viewer?.dispose());
-

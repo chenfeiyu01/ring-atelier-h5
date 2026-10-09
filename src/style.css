@@ -8,3 +8,5 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.spinner{animation:none}}
 
 .viewport { background: #000; }
+.inlay-options{display:flex;gap:12px}.inlay-options button{flex:1;padding:12px 18px;border:1px solid var(--line);border-radius:3px;font-family:var(--serif);font-size:15px;letter-spacing:2px}.inlay-options button.selected{border-color:#9e8d5e;background:#211d14;color:var(--gold)}
+@media(max-width:700px){.inlay-setting{grid-column:1 / -1}.inlay-options{max-width:280px}.inlay-options button{padding:11px 20px;font-size:13px}}

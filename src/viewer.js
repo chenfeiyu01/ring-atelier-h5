@@ -4,11 +4,13 @@ import { FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createStudio } from './studio.js';
 import { MotionDenoiser } from './motion-denoise.js';
+import { installDiamondDispersion, setDiamondOpticsEnabled } from './diamond-optics.js';
 const FINAL_SAMPLES = 192;
 
 // All iOS browsers and desktop Safari use Apple's WebKit shader compiler.
 // three-gpu-pathtracer 0.0.24 clearcoat produces black radiance there (#711).
-// Keep the underlying metal BRDF and the original clearcoat on other engines.
+// Diamond mode also disables this optional layer: the combined dielectric
+// shader reproduces the same clearcoat failure in Chromium on this Apple GPU.
 const APPLE_WEBKIT = /iP(hone|ad|od)/.test(navigator.userAgent)
   || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
   || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|OPR|Android/.test(navigator.userAgent));
@@ -17,7 +19,7 @@ const APPLE_WEBKIT = /iP(hone|ad|od)/.test(navigator.userAgent)
 export class RingViewer {
   constructor(container, { onStatus = () => {}, onInteraction = () => {} } = {}) {
     this.container = container; this.onStatus = onStatus; this.onInteraction = onInteraction;
-    this.quality = 'fine'; this.lighting = 'black'; this.ready = false; this.disposed = false; this.suspended = false;
+    this.quality = 'fine'; this.lighting = 'black'; this.inlay = 'silver'; this.ready = false; this.disposed = false; this.suspended = false;
     this.lastChange = 0; this.dirty = true; this.frameCount = 0; this.frameTimes = [];
     this.rasterFrames = 0; this.pathTracedFrames = 0; this.motionTraceFrames = 0;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -77,10 +79,14 @@ export class RingViewer {
     if (this.disposed) return;
     this.model = gltf.scene;
     this.model.rotation.z = -0.23;
+    this.beads = [];
+    this.metalClearcoat = new Map();
     this.model.traverse(o => {
       if (!o.isMesh) return;
+      if (/silver/i.test(o.material.name)) this.beads.push(o);
       o.material.envMapIntensity = 1;
-      if (APPLE_WEBKIT && o.material.clearcoat > 0) o.material.clearcoat = 0;
+      if (!this.metalClearcoat.has(o.material)) this.metalClearcoat.set(o.material, o.material.clearcoat || 0);
+      o.material.clearcoat = APPLE_WEBKIT ? 0 : this.metalClearcoat.get(o.material);
       // Imported colors are scene-linear and remain physically based.
       o.material.side = THREE.FrontSide;
     });
@@ -107,7 +113,7 @@ export class RingViewer {
     if (this.tracer) this.tracer.updateCamera();
   }
   motionResolutionScale() {
-    // Keep the same six-bounce light transport while reducing the number of
+    // Keep the same eight-bounce light transport while reducing the number of
     // traced pixels during interaction. Full resolution still converges at rest.
     return THREE.MathUtils.clamp(Math.sqrt(480000 / (this.canvas.width * this.canvas.height)), 0.4, 1);
   }
@@ -123,12 +129,62 @@ export class RingViewer {
   setLighting(preset) {
     this.lighting = preset;
     this.environments ||= new Map();
-    if (!this.environments.has(preset)) this.environments.set(preset, createStudio(preset));
-    this.scene.environment = this.environments.get(preset);
+    const key = `${preset}-${this.inlay}`;
+    if (!this.environments.has(key)) this.environments.set(key, createStudio(preset, this.inlay === 'diamond'));
+    this.scene.environment = this.environments.get(key);
     this.scene.background.set(preset === 'soft' ? 0x171717 : 0x000000);
     if (this.tracer) this.tracer.updateEnvironment();
     this.motionDenoiser?.reset();
     this.invalidate();
+  }
+  async setInlay(inlay) {
+    if (!this.ready || this.changingInlay || inlay === this.inlay || !['silver', 'diamond'].includes(inlay)) return;
+    this.changingInlay = true;
+    this.onStatus(inlay === 'diamond' ? '正在准备钻石光影…' : '正在切换银珠…', 'fine');
+    try {
+      if (inlay === 'diamond' && !this.diamonds) {
+        const gltf = await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/diamond.glb`);
+        if (this.disposed) return;
+        gltf.scene.updateMatrixWorld(true);
+        let source;
+        gltf.scene.traverse(o => { if (o.isMesh) source = o; });
+        const geometry = source.geometry.clone().applyMatrix4(source.matrixWorld);
+        source.geometry.dispose(); source.material.dispose();
+        const material = new THREE.MeshPhysicalMaterial({
+          name: 'Round brilliant diamond', color: 0xffffff, metalness: 0, roughness: 0.012,
+          transmission: 1, ior: 2.417, thickness: 0.31, attenuationDistance: 1000, clearcoat: 0, side: THREE.DoubleSide,
+        });
+        this.diamonds = new THREE.Group();
+        for (let i = 0; i < this.beads.length; i++) {
+          const t = 2 * Math.PI * i / this.beads.length, alpha = t - Math.PI / 2 + 0.25;
+          const radial = new THREE.Vector3(Math.cos(t), Math.sin(t), 0), depth = new THREE.Vector3(0, 0, 1);
+          const v = radial.clone().multiplyScalar(Math.cos(alpha)).addScaledVector(depth, Math.sin(alpha));
+          const u = depth.clone().multiplyScalar(Math.cos(alpha)).addScaledVector(radial, -Math.sin(alpha));
+          const gem = new THREE.Mesh(geometry, material);
+          gem.name = `Diamond ${i + 1}`;
+          gem.position.copy(radial).multiplyScalar(1.30).addScaledVector(v, 0.075);
+          gem.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(u, new THREE.Vector3().crossVectors(v, u), v));
+          this.diamonds.add(gem);
+        }
+        this.model.add(this.diamonds);
+      }
+      this.inlay = inlay;
+      this.metalClearcoat.forEach((original, material) => {
+        material.clearcoat = APPLE_WEBKIT || inlay === 'diamond' ? 0 : original;
+      });
+      this.beads.forEach(o => { o.visible = inlay === 'silver'; });
+      if (this.diamonds) this.diamonds.visible = inlay === 'diamond';
+      this.scene.updateMatrixWorld(true);
+      this.setLighting(this.lighting);
+      setDiamondOpticsEnabled(this.tracer, inlay === 'diamond');
+      this.tracer.setScene(this.scene, this.camera);
+      this.motionDenoiser.dispose();
+      this.motionDenoiser = new MotionDenoiser(this.model, this.canvas.width, this.canvas.height);
+      this.lastStatus = null;
+      this.invalidate();
+    } finally {
+      this.changingInlay = false;
+    }
   }
   async prepareFine() {
     this.lastStatus = null;
@@ -139,7 +195,13 @@ export class RingViewer {
       const { WebGLPathTracer, DenoiseMaterial } = await import('three-gpu-pathtracer');
       if (this.disposed) return;
       this.tracer = new WebGLPathTracer(this.renderer);
-      this.tracer.bounces = 6; this.tracer.filterGlossyFactor = 0.3;
+      this.tracer.bounces = 8; this.tracer.filterGlossyFactor = 0.2;
+      this.tracer.transmissiveBounces = 12;
+      installDiamondDispersion(this.tracer);
+      // This specular scene is lit only by the HDR studio. Sample reflected and
+      // refracted directions without an extra environment shadow ray per hit.
+      // The diamond's small panels are also reached by these specular paths.
+      this.tracer.multipleImportanceSampling = false;
       // One full sample per frame: nine tiles previously consumed nine RAF ticks.
       this.tracer.tiles.set(1, 1); this.tracer.renderDelay = 0; this.tracer.fadeDuration = 80;
       this.tracer.minSamples = 1; this.tracer.renderScale = 1;
@@ -171,8 +233,11 @@ export class RingViewer {
     const previousTarget = this.renderer.getRenderTarget();
     // The dynamic low-resolution tracer still runs; avoid tracing both buffers during movement.
     this.tracer.pausePathTracing = moving;
+    this.tracer.renderToCanvas = moving || this.tracer.samples < 16;
     this.renderer.setRenderTarget(this.fineTarget);
-    this.tracer.renderSample();
+    const batch = !moving && this.tracer.samples >= 16
+      ? Math.min(2, FINAL_SAMPLES - this.tracer.samples) : 1;
+    for (let sample = 0; sample < batch; sample++) this.tracer.renderSample();
     this.renderer.setRenderTarget(previousTarget);
     if (this.tracer.isCompiling) return;
     if (this.tracer.samples < 16) {
@@ -180,9 +245,14 @@ export class RingViewer {
         this.scene.background, this.tracer.lowResScale);
     } else {
       // Use the original full-resolution radiance directly for the settled image.
+      const refinement = THREE.MathUtils.smoothstep(this.tracer.samples, 32, 128);
+      this.denoiseMaterial.sigma = THREE.MathUtils.lerp(2, 1.25, refinement);
+      this.denoiseMaterial.threshold = THREE.MathUtils.lerp(0.14, 0.10, refinement);
       this.denoiseMaterial.map = this.tracer.target.texture;
       this.denoiseQuad.render(this.renderer);
-      this.motionDenoiser.seed(this.renderer, this.camera, this.tracer.target.texture, this.tracer.samples);
+      if (this.tracer.samples % 16 === 0 || this.tracer.samples >= FINAL_SAMPLES) {
+        this.motionDenoiser.seed(this.renderer, this.camera, this.tracer.target.texture, this.tracer.samples);
+      }
     }
     this.pathTracedFrames++;
     if (moving) this.motionTraceFrames++;
@@ -219,7 +289,7 @@ export class RingViewer {
     }
   }
   diagnostics() {
-    return { ready: this.ready, appleWebKit: APPLE_WEBKIT, quality: this.quality, lighting: this.lighting, samples: this.tracer?.samples || 0,
+    return { ready: this.ready, appleWebKit: APPLE_WEBKIT, quality: this.quality, lighting: this.lighting, inlay: this.inlay, samples: this.tracer?.samples || 0,
       triangles: this.renderer.info.render.triangles, calls: this.renderer.info.render.calls, frames: this.frameCount,
       camera: this.camera.position.toArray(), autoRotate: this.controls.autoRotate,
       buffer: [this.canvas.width, this.canvas.height], motionScale: this.tracer?.lowResScale || 0,

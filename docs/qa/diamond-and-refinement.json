@@ -1,0 +1,184 @@
+{
+  "date": "2026-10-10",
+  "device": "Current Mac; desktop Chromium; not a physical phone",
+  "full_samples": 192,
+  "general_bounces": 8,
+  "additional_transmission_traversals": 12,
+  "baseline": {
+    "ready": true,
+    "appleWebKit": false,
+    "quality": "fine",
+    "lighting": "black",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 397,
+    "camera": [
+      -6.59330810969874,
+      3.355267723790247,
+      2.6401641373733082
+    ],
+    "autoRotate": false,
+    "buffer": [
+      848,
+      574
+    ],
+    "motionScale": 0.993040009096988,
+    "rasterFrames": 0,
+    "pathTracedFrames": 396,
+    "motionTraceFrames": 12,
+    "recoveryTimes": {
+      "1": 65,
+      "4": 105,
+      "8": 199,
+      "16": 359,
+      "24": 560,
+      "32": 761,
+      "192": 4224
+    },
+    "temporalFrames": 42,
+    "historySeeds": 354,
+    "averageFrameMs": 97.7076923076923
+  },
+  "silver_final": {
+    "ready": true,
+    "appleWebKit": false,
+    "quality": "fine",
+    "lighting": "black",
+    "inlay": "silver",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 224,
+    "camera": [
+      -6.591959400313305,
+      3.3528338127741164,
+      2.646616082574031
+    ],
+    "autoRotate": false,
+    "buffer": [
+      848,
+      575
+    ],
+    "motionScale": 0.9921761202783169,
+    "rasterFrames": 0,
+    "pathTracedFrames": 221,
+    "motionTraceFrames": 13,
+    "recoveryTimes": {
+      "1": 69,
+      "4": 108,
+      "8": 161,
+      "16": 269,
+      "24": 323,
+      "32": 416,
+      "192": 2421
+    },
+    "temporalFrames": 43,
+    "historySeeds": 24,
+    "averageFrameMs": 76.01874999999981
+  },
+  "diamond_final": {
+    "ready": true,
+    "appleWebKit": false,
+    "quality": "fine",
+    "lighting": "black",
+    "inlay": "diamond",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 335,
+    "camera": [
+      -6.591959400313305,
+      3.3528338127741164,
+      2.646616082574031
+    ],
+    "autoRotate": false,
+    "buffer": [
+      848,
+      575
+    ],
+    "motionScale": 0.9921761202783169,
+    "rasterFrames": 0,
+    "pathTracedFrames": 330,
+    "motionTraceFrames": 18,
+    "recoveryTimes": {
+      "1": 79,
+      "4": 120,
+      "8": 200,
+      "16": 507,
+      "24": 654,
+      "32": 908,
+      "192": 6084
+    },
+    "temporalFrames": 47,
+    "historySeeds": 24,
+    "averageFrameMs": 87.29130434782631
+  },
+  "diamond_path_budget_comparison": {
+    "ring": {
+      "mean_abs_rgb_difference_255": 4.351,
+      "mean_brightness_20": 172.508,
+      "mean_brightness_12": 171.302,
+      "p95_abs_difference": 18
+    },
+    "upper_gems": {
+      "mean_abs_rgb_difference_255": 6.374,
+      "mean_brightness_20": 182.835,
+      "mean_brightness_12": 180.845,
+      "p95_abs_difference": 22
+    },
+    "lower_gems": {
+      "mean_abs_rgb_difference_255": 6.429,
+      "mean_brightness_20": 175.279,
+      "mean_brightness_12": 173.338,
+      "p95_abs_difference": 23
+    }
+  },
+  "notes": [
+    "Baseline and initial optimized comparison used an identical 848x574 buffer and camera. Final inlay controls make the 1280x720 viewport canvas 848x575, with a correspondingly slight camera difference.",
+    "Baseline GPU query trace/post totals overlap and must not be treated as independently measured GPU phases.",
+    "Diamond 12 extra traversal comparison retained facet contrast and was about 1 percent darker in sampled gem regions than 20 extra traversals; Monte Carlo noise also contributes to image differences.",
+    "Latest diamond profile is the version with visible gold, compatible polished dielectric, RGB dispersion and no optional metal clearcoat. Earlier dark-gold profile is invalid for performance claims."
+  ],
+  "mobile_final": {
+    "ready": true,
+    "appleWebKit": false,
+    "quality": "fine",
+    "lighting": "black",
+    "inlay": "diamond",
+    "samples": 192,
+    "triangles": 1,
+    "calls": 1,
+    "frames": 564,
+    "camera": [
+      -6.466506783275735,
+      3.879952488857858,
+      2.197784954460857
+    ],
+    "autoRotate": false,
+    "buffer": [
+      388,
+      443
+    ],
+    "motionScale": 1,
+    "rasterFrames": 0,
+    "pathTracedFrames": 559,
+    "motionTraceFrames": 37,
+    "recoveryTimes": {
+      "1": 72,
+      "4": 114,
+      "8": 193,
+      "16": 327,
+      "24": 435,
+      "32": 596,
+      "192": 3979
+    },
+    "temporalFrames": 98,
+    "historySeeds": 48,
+    "averageFrameMs": 55.714285714286255
+  },
+  "viewport_overflow": {
+    "width": 390,
+    "scrollWidth": 390
+  }
+}

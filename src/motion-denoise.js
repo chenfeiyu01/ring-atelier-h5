@@ -10,7 +10,7 @@ const targetOptions = { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter
 // History survives camera movement, but never changes the converged static render.
 export class MotionDenoiser {
   constructor(model, width, height) {
-    this.guideMaterials = [1 / 3, 2 / 3].map(surfaceId => new THREE.ShaderMaterial({
+    this.guideMaterials = [1 / 3, 2 / 3, 1].map(surfaceId => new THREE.ShaderMaterial({
       vertexShader: `varying vec3 worldNormal;
         void main() {
           worldNormal = normalize(mat3(modelMatrix) * normal);
@@ -23,7 +23,7 @@ export class MotionDenoiser {
     this.scene = new THREE.Scene();
     const guideModel = model.clone(true);
     guideModel.traverse(o => {
-      if (o.isMesh) o.material = this.guideMaterials[o.material.metalness < 1 ? 1 : 0];
+      if (o.isMesh) o.material = this.guideMaterials[o.material.transmission > 0.9 ? 2 : o.material.metalness < 1 ? 1 : 0];
     });
     this.scene.add(guideModel);
     this.guides = [0, 1].map(() => {
@@ -137,8 +137,8 @@ export class MotionDenoiser {
               vec3 deviation = sqrt(max(second / max(total, 1.0) - mean * mean, vec3(0.0)));
               vec3 historyColor = clamp(old.rgb, max(vec3(0.0), mean - 2.5 * deviation - 0.12), mean + 2.5 * deviation + 0.12);
               float angle = acos(clamp(dot(normalize(cameraPositionNow - world), normalize(cameraPositionBefore - world)), -1.0, 1.0));
-              float maxWeight = surface.a < 0.5 ? 0.94 : 0.96;
-              float weight = min(old.a / (old.a + 1.0), maxWeight) * exp(-angle * 5.0);
+              float maxWeight = surface.a > 0.9 ? 0.80 : surface.a < 0.5 ? 0.94 : 0.96;
+              float weight = min(old.a / (old.a + 1.0), maxWeight) * exp(-angle * (surface.a > 0.9 ? 12.0 : 5.0));
               color = mix(color, historyColor, weight); count = min(old.a + 1.0, 32.0);
             }
           }

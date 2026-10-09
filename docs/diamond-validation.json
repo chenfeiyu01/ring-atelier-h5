@@ -1,0 +1,31 @@
+{
+  "optical_facets": 57,
+  "girdle_faces": 16,
+  "closed_edges": true,
+  "positive_volume": true,
+  "max_planarity_error": 1.5366822481155396e-08,
+  "convex_error": 7.450580596923828e-09,
+  "gold_intersections_by_gem": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "min_neighbor_bounding_sphere_gap": 0.014370099800652347
+}

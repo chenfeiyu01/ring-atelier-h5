@@ -1,50 +1,47 @@
 [
   {
-    "path": "assets/Pass-CfGZKThh.js",
-    "status": 200,
-    "bytes": 206356,
-    "matches_dist": true
-  },
-  {
-    "path": "assets/index-CIfAjK-c.js",
-    "status": 200,
-    "bytes": 411875,
-    "matches_dist": true
-  },
-  {
-    "path": "assets/index-DXWmm4Ip.css",
-    "status": 200,
-    "bytes": 9838,
-    "matches_dist": true
-  },
-  {
-    "path": "assets/src-28NcCaQR.js",
-    "status": 200,
-    "bytes": 198794,
-    "matches_dist": true
+    "path": "index.html",
+    "bytes": 709,
+    "hash_matches": true
   },
   {
     "path": "favicon.svg",
-    "status": 200,
     "bytes": 318,
-    "matches_dist": true
-  },
-  {
-    "path": "index.html",
-    "status": 200,
-    "bytes": 709,
-    "matches_dist": true
+    "hash_matches": true
   },
   {
     "path": "models/ring.glb",
-    "status": 200,
-    "bytes": 7129872,
-    "matches_dist": true
+    "bytes": 6594148,
+    "hash_matches": true
+  },
+  {
+    "path": "models/diamond.glb",
+    "bytes": 8064,
+    "hash_matches": true
+  },
+  {
+    "path": "assets/src-28NcCaQR.js",
+    "bytes": 198794,
+    "hash_matches": true
+  },
+  {
+    "path": "assets/index-D3EnrJO-.css",
+    "bytes": 9437,
+    "hash_matches": true
+  },
+  {
+    "path": "assets/index-CFnAqFIo.js",
+    "bytes": 416101,
+    "hash_matches": true
+  },
+  {
+    "path": "assets/Pass-CfGZKThh.js",
+    "bytes": 206356,
+    "hash_matches": true
   },
   {
     "path": "reference/ring.mp4",
-    "status": 200,
     "bytes": 256053,
-    "matches_dist": true
+    "hash_matches": true
   }
 ]

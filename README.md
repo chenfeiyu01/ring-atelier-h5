@@ -1,76 +1,65 @@
 # 环 · 观 / Ring Atelier
 
-基于用户提供的 3 秒戒指视频与补充截图制作的 H5 三维查看器。真正的三维几何，可用鼠标或触屏旋转；不是切换视频帧。
+从一段 3 秒戒指视频重建的 H5 三维查看器。拖拽旋转、双指或滚轮缩放，支持银珠与钻石镶嵌，所有设备使用渐进精细光影。
 
-## 公网访问
+## 查看与部署
 
-[环 · 观 / Ring Atelier](https://ring-atelier-h5.chenpowpow.chatgpt.site)
+页面部署到 **GitHub Pages**：https://chenfeiyu01.github.io/ring-atelier-h5/ 。源码仓库：https://github.com/chenfeiyu01/ring-atelier-h5 。
 
-2026-10-10 更新内容：20 颗更大的珠子，只保留精细模式，移除自动旋转；增加 Apple 浏览器精细光影兼容处理。通过 Sites 托管静态构建，模型、视频和代码随站点一起发布，访问不依赖本地电脑。独立嵌入入口是在地址后加 `?embed=1`。站点标识和静态输出目录保存在 `.openai/hosting.json`，后续更新继续使用同一站点。
+`.github/workflows/pages.yml` 在 main 更新后构建并发布 dist；也可在 Actions 中手动运行。Vite 使用相对资源路径，适用于 GitHub Pages 的项目子目录。模型、视频和代码随站点发布，运行时不依赖第三方 CDN。
 
-## 运行
+## 本地运行
 
 ```bash
 npm ci
 npm run dev
 ```
 
-访问终端显示的地址，默认 http://localhost:5186 。同一局域网的手机可以通过电脑局域网 IP 与此端口访问。也可双击 `启动查看器.command`。
+默认地址 http://localhost:5186，也可双击 `启动查看器.command`。
 
 ```bash
 npm run build
 npm run preview
 ```
 
-`dist/` 可直接部署到静态托管。不要双击 index.html 用 file:// 打开，模型和模块需要 HTTP 服务。运行时模型、视频和代码均来自本地项目，不依赖第三方 CDN。
+需要支持 WebGL 2 浮点渲染的浏览器；通过 HTTP 服务访问，不能直接双击 HTML 文件。
 
 ## 操作
 
-- 单指 / 鼠标拖拽：旋转；双指 / 滚轮：缩放。
-- 放大、缩小、重置，立体 / 正面 / 侧面视角。
-- 三套摄影棚环境：经典黑、柔光棚、暖金光。
-- 精细：所有设备统一使用。拖拽、缩放时持续进行六次反弹的路径追踪，保留金属互相反射；运动时复用前一帧对应表面的清晰细节，以深度、法线和材质边界排除遮挡变化，再用少量空间过滤处理新出现的区域。移动追踪像素预算约 48 万，最高保留完整分辨率。松手后约 65ms 开始完整分辨率积累，每帧一个样本，最终恢复到原来的 192 次采样和静止降噪处理。运动时仍可能出现少量噪点，帧率取决于 GPU。
-- “查看原片”播放用户视频，便于核对。
-- 键盘：聚焦三维画布后，方向键旋转、+ / - 缩放、Home 重置。
+- 鼠标或单指拖拽旋转；滚轮或双指缩放。支持放大、缩小和重置。
+- “镶嵌”切换银珠 / 钻石，保持当前视角与灯光。
+- 三套光影：经典黑、柔光棚、暖金光；三种视角：立体、正面、侧面。
+- “查看原片”播放提供的参考视频。
+- 聚焦画布后，方向键旋转、+ / - 缩放、Home 重置。
 
-## 模型与当前精度
+拖动时持续进行路径追踪并复用有效的历史细节；松手约 65ms 后以完整分辨率累计到 192 样本。采用 8 次反弹，钻石另有最多 12 次透射内部遍历。静止阶段合并采样与后处理，减少等待和重复工作；不降低最终样本上限。移动画面和刚显露的表面仍可能有噪点。耗时依赖设备和画面尺寸，实测记录见 `docs/qa/README.md`。
 
-- `models/ring.blend`：可编辑 Blender 模型、材质和摄影棚灯光。
-- `public/models/ring.glb`：供 H5 使用的模型。
-- `scripts/build_ring.py`：可复现建模脚本，使用 Blender 运行。
-- `scripts/validate_model.py`：检查封闭网格、随截面翻转的封闭背面、开放面以及珠子穿模。
-- 金色戒托是一条带封闭底托的连续槽带，截面沿戒圈完整翻转一周；开放面与封闭背面一起交换内外方向。没有额外叠放固定的圆筒内衬。
-- 按用户反馈加厚戒圈、增大珠子，当前使用 20 颗银白圆珠（半径 0.195，相比之前 0.155 增大约 26%）。数量、尺寸和材料参数是视觉重建选择，不是原始 CAD 数据。
+## 模型
 
-输入仅为 750×750 压缩视频和截图，未包含真实尺寸、原始材质或灯光文件。因此，这是用于展示的外观重建，不是原款精确复刻或可直接生产的工程模型。当前精细模式用于改善反射与光影，不代表与原片逐像素一致。
+- `models/ring.blend` / `public/models/ring.glb`：金色翻转槽带及 20 颗银珠。
+- `models/diamond.blend` / `public/models/diamond.glb`：闭合的圆形明亮式切割钻石，57 个光学切面，另有 16 个腰棱面。
+- `scripts/build_ring.py`、`scripts/build_diamond.py`：Blender 建模脚本。
+- `scripts/validate_model.py`、`docs/model-validation.json`、`docs/diamond-validation.json`：几何校验及结果。
 
-## 嵌入现有 H5
+金色槽带的开放面与封闭背面沿戒圈完整翻转一周。银珠半径 0.195；钻石腰围半径 0.185，台面随槽口方向转动。20 颗钻石均无戒托表面相交，邻石包围球保留正间距。
 
-最简单的独立嵌入：
+钻石使用 IOR 2.417 附近的三波段折射率、菲涅耳反射与全反射，加上真实切面和 HDR 光源形成火彩。色散为 RGB 三波段近似，不是完整光谱求解；没有使用彩虹贴图或绘制闪光。Safari 的通用折射路径存在发黑问题，钻石已改用独立的抛光介质采样分支，桌面 Safari 已实际复核。
 
-```html
-<iframe src="/ring-atelier/?embed=1"
-  title="戒指三维查看器"
-  style="width:100%;height:520px;border:0"
-  loading="lazy"></iframe>
-```
+输入没有原始尺寸、CAD 或 KeyShot 材质与灯光，因此这是展示用外观重建，不是原款精确复刻或生产工程模型。真实手机触控、GPU 性能与发热尚未验证。
 
-`?embed=1` 隐藏独立页面的页眉与参数面板，保留三维画布、旋转与缩放工具。要集成自有按钮，可直接使用 `src/viewer.js` 的 `RingViewer` 类（Vite / ES Modules）：
+## 嵌入
+
+在页面地址后添加 `?embed=1` 可隐藏页眉、设置区和页脚，保留画布与查看工具。也可在 Vite / ES Modules 项目中使用查看器：
 
 ```js
+import { RingViewer } from './src/viewer.js';
 const viewer = new RingViewer(container, { onStatus });
 await viewer.load();
+await viewer.setInlay('diamond'); // silver / diamond
 viewer.setView('hero'); // front / side
 viewer.setLighting('black'); // soft / warm
-// 页面卸载时
+// 卸载时
 viewer.dispose();
 ```
 
-资源目录须随应用一起部署；已有路由前缀时通过 Vite `base` 配置调整。查看器自动跟随容器大小，触控手势只在画布范围内生效。
-
-## 依赖与选择
-
-采用 Three.js + Vite，精细模式按需载入 three-gpu-pathtracer。依赖版本锁定在 package-lock.json；详情见 `docs/implementation-notes.md`。所有模型几何为本项目生成，未使用来源或授权不明的现成珠宝资产。
-
-
-Apple 浏览器兼容：已修复 Safari 精细渲染全黑的清漆层问题，iPhone/iPad 使用同一兼容处理；真实 iPhone Edge 仍待复验。本版同步上述兼容修复。
+依赖固定为 Three.js 0.180.0、three-gpu-pathtracer 0.0.24、three-mesh-bvh 0.9.1。详见 `docs/implementation-notes.md`。这些几何均由项目生成。
