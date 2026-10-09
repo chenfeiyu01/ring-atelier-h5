@@ -1,0 +1,72 @@
+{
+  "url": "https://chenfeiyu01.github.io/ring-atelier-h5/",
+  "repository": "https://github.com/chenfeiyu01/ring-atelier-h5",
+  "commit": "c4601fa4e2386df909568029626fda2341af45a9",
+  "workflow_run": "https://github.com/chenfeiyu01/ring-atelier-h5/actions/runs/37973088616",
+  "workflow_conclusion": "success",
+  "assets": [
+    {
+      "path": "index.html",
+      "http_status": 200,
+      "bytes": 709,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "favicon.svg",
+      "http_status": 200,
+      "bytes": 318,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "models/ring.glb",
+      "http_status": 200,
+      "bytes": 6594148,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "models/diamond.glb",
+      "http_status": 200,
+      "bytes": 8064,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "assets/src-28NcCaQR.js",
+      "http_status": 200,
+      "bytes": 198794,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "assets/index-D3EnrJO-.css",
+      "http_status": 200,
+      "bytes": 9437,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "assets/index-CFnAqFIo.js",
+      "http_status": 200,
+      "bytes": 416101,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "assets/Pass-CfGZKThh.js",
+      "http_status": 200,
+      "bytes": 206356,
+      "hash_matches_local_build": true
+    },
+    {
+      "path": "reference/ring.mp4",
+      "http_status": 200,
+      "bytes": 256053,
+      "hash_matches_local_build": true
+    }
+  ],
+  "actual_phone_tested": false,
+  "browser_verified": [
+    "silver loaded",
+    "diamond selected and rendered",
+    "actual drag changed view",
+    "zoom rendered",
+    "reset view restored"
+  ],
+  "browser_errors_or_warnings": []
+}

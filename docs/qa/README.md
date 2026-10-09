@@ -33,3 +33,7 @@
 ## 历史记录
 
 `browser-checks.json`、`refinement-speed.json`、`temporal-quality.json`、`bead-revision.json`、`apple-webkit-compat.json` 及其对应截图均保留为历史证据。旧版的 26 颗珠子、48 样本上限、自动旋转、模式切换或旧 Sites 部署状态不代表当前版本。
+
+## GitHub Pages 发布验证
+
+运行 [37973088616](https://github.com/chenfeiyu01/ring-atelier-h5/actions/runs/37973088616) 构建和部署成功。已直接打开 [公网页面](https://chenfeiyu01.github.io/ring-atelier-h5/) 验证银珠、钻石、拖拽、缩放和重置；当前会话没有应用错误或警告。9 个线上静态资源的状态均为 200，SHA-256 与本地 dist 一致。数据见 github-release.json，实际交互后的图像见 github-interaction.png。GitHub Actions 的依赖运行时弃用提示不影响本次构建与部署成功，不能把它们说成应用控制台错误。

@@ -4,7 +4,7 @@
 
 在 Documents/ring-atelier-h5 提供可拖拽的真实三维戒指，依据用户的视频与截图重建内外翻转槽带。当前加入银珠 / 钻石选择，并继续优化光影与松手后的精细化速度。用户明确要求最终部署到 GitHub Pages，本轮不更新 GPT Sites。
 
-入口 src/main.js，开发 npm run dev（5186），生产构建 npm run build。独立嵌入 ?embed=1。目标仓库 chenfeiyu01/ring-atelier-h5；工作流 .github/workflows/pages.yml，Pages 发布 dist。
+入口 src/main.js，开发 npm run dev（5186），生产构建 npm run build。独立嵌入 ?embed=1。已发布到 https://chenfeiyu01.github.io/ring-atelier-h5/ ，源码仓库 chenfeiyu01/ring-atelier-h5；工作流 .github/workflows/pages.yml，Pages 发布 dist。
 
 ## 关键文件
 
@@ -30,3 +30,7 @@ Apple 浏览器的金属 clearcoat 绕过继续保留；钻石联合着色器在
 现有银珠与戒托校验继续有效。钻石为封闭、正体积、平面切面且凸的网格；20 颗均不与戒托相交，邻石包围球最小间距约 0.01437。构建、桌面 Chromium、Safari、窄屏与发布验证的最终状态见 docs/qa/README.md。
 
 尚无真实手机 GPU、触控和发热验收。视频未给出原始 CAD、尺寸、材料或灯光，当前是展示用视觉重建，不是生产模型或 KeyShot 精确复制。原 Sites 站点保留历史版本；后续发布入口改为 GitHub Pages。
+
+## GitHub 发布验证
+
+2026-10-10，运行 37973088616 发布成功，部署代码提交 c4601fa4e2386df909568029626fda2341af45a9。线上 9 个资源 HTTP 200 且 SHA-256 与本地构建一致；实际打开公网页面，银珠与钻石显示、拖拽、缩放和重置通过，未见应用错误或警告。证据见 docs/qa/github-release.json 与 github-interaction.png。后续文档提交不改变已验证的运行时代码。
