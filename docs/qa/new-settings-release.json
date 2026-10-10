@@ -1,0 +1,96 @@
+{
+  "commit": "4509cb1d948c8ca2e9f6ee9f37b9b273a1cc06ec",
+  "run": 38030407966,
+  "url": "https://chenfeiyu01.github.io/ring-atelier-h5/",
+  "resources": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "sha256": "85d9b09311b1d484ba482389e3fcaa8a128ff96c0d2488ef15cb63f2afd06e28",
+      "matchesLocal": true
+    },
+    {
+      "path": "favicon.svg",
+      "status": 200,
+      "sha256": "a30fe44fa4f263279018876dba6a72780b3bc199b4f4dbd54f9e764a02829819",
+      "matchesLocal": true
+    },
+    {
+      "path": "models/solitaire.glb",
+      "status": 200,
+      "sha256": "56a54e7aca50c02765c81a4bb81d198f1841ed0585e11bf5b1c92ff39ba88972",
+      "matchesLocal": true
+    },
+    {
+      "path": "models/ring.glb",
+      "status": 200,
+      "sha256": "e1f2a08a91abcc468672ed65c5aa504fa742675ee3014d86faee013f2b9f6e4d",
+      "matchesLocal": true
+    },
+    {
+      "path": "models/diamond.glb",
+      "status": 200,
+      "sha256": "dc84d0408fc28d8fa6594ef630defc04acc6504120c9b30bcb70444ad0822551",
+      "matchesLocal": true
+    },
+    {
+      "path": "models/interlace.glb",
+      "status": 200,
+      "sha256": "4d0804f58205248c8cc8612af7176e4345fd21d21ae9072e4a86cceafbf42c35",
+      "matchesLocal": true
+    },
+    {
+      "path": "models/sapphire.glb",
+      "status": 200,
+      "sha256": "e3045b872ec83bbbee44a246387a5f067483e2480d91eb61ed98d42554dfc7e0",
+      "matchesLocal": true
+    },
+    {
+      "path": "assets/src-D7nfk0-b.js",
+      "status": 200,
+      "sha256": "0c4b82862800aeb47df00832973ed2699655a12e166b4e676754fbb6ae4a22f2",
+      "matchesLocal": true
+    },
+    {
+      "path": "assets/index-C1XdixQ4.css",
+      "status": 200,
+      "sha256": "51d921413086508001f5616c504103316a2d14184e9bf7c943219fdf34369934",
+      "matchesLocal": true
+    },
+    {
+      "path": "assets/Pass-C-BdjQ0e.js",
+      "status": 200,
+      "sha256": "1107a1c87b1353f6cc0ef5898a210684123f31230abb0aee351ad86628cb1c4d",
+      "matchesLocal": true
+    },
+    {
+      "path": "assets/index-B2uqGRE-.js",
+      "status": 200,
+      "sha256": "b4807a2987dfd72f2d69b76f1a1240f3a8fc02e613b9f20b936a965760d728cf",
+      "matchesLocal": true
+    },
+    {
+      "path": "reference/ring.mp4",
+      "status": 200,
+      "sha256": "8e914fb552d28a3d1124ffc376a3881c14a2efb0f813a3331721b723bfc02f36",
+      "matchesLocal": true
+    }
+  ],
+  "browser": {
+    "url": "https://chenfeiyu01.github.io/ring-atelier-h5/",
+    "initialLoadingAndUnlock": true,
+    "visuallyVerified": [
+      "solitaire / diamond / platinum",
+      "solitaire / sapphire / platinum",
+      "interlace / silver / platinum",
+      "interlace / silver / yellow",
+      "ribbon / silver / yellow",
+      "ribbon / silver / rose",
+      "ribbon / silver / white"
+    ],
+    "allReachedCompletedRender": true,
+    "consoleErrors": [],
+    "consoleWarnings": [],
+    "realMobileVerified": false
+  }
+}
