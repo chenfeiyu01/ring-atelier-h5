@@ -8,7 +8,9 @@ from mathutils.bvhtree import BVHTree
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
-R = 0.185
+R = 0.29
+COUNT = 10
+OFFSET = 0.22
 verts, faces = [], []
 
 def ring(count, radius, height, offset=0):
@@ -70,20 +72,20 @@ volume = bm.calc_volume(signed=True); bm.free()
 planarity = max(abs(p.normal.dot(mesh.vertices[v].co - p.center)) for p in mesh.polygons for v in p.vertices)
 convex_error = max(p.normal.dot(v.co - p.center) for p in mesh.polygons for v in mesh.vertices)
 
-# Check the actual 20 transformed gems against the existing gold channel.
+# Check the actual transformed gems against the existing gold channel.
 with bpy.data.libraries.load(os.path.join(ROOT, 'models/ring.blend'), link=False) as (src, dst):
     dst.objects = [n for n in src.objects if n.startswith('Gold shank')]
 gold = dst.objects[0]
 gold_bvh = BVHTree.FromPolygons([v.co for v in gold.data.vertices], [p.vertices for p in gold.data.polygons])
 centers, collisions = [], []
 convert = lambda p: Vector((p.x, -p.z, p.y))
-for i in range(20):
-    t = 2 * math.pi * i / 20; alpha = t - math.pi / 2 + 0.25
+for i in range(COUNT):
+    t = 2 * math.pi * i / COUNT; alpha = t - math.pi / 2 + 0.25
     radial = Vector((math.cos(t), math.sin(t), 0)); depth = Vector((0, 0, 1))
     v = radial * math.cos(alpha) + depth * math.sin(alpha)
     u = depth * math.cos(alpha) - radial * math.sin(alpha)
     y = v.cross(u)
-    center = radial * 1.30 + v * 0.075
+    center = radial * 1.30 + v * OFFSET
     centers.append(center)
     world = []
     for p in mesh.vertices:
@@ -91,8 +93,8 @@ for i in range(20):
         world.append(convert(center + u * local.x + y * local.y + v * local.z))
     gem_bvh = BVHTree.FromPolygons(world, [p.vertices for p in mesh.polygons])
     collisions.append(len(gold_bvh.overlap(gem_bvh)))
-gap = min((centers[i] - centers[j]).length - 2 * R for i in range(20) for j in range(i + 1, 20))
-report = dict(optical_facets=57, girdle_faces=16, closed_edges=non_manifold == 0,
+gap = min((centers[i] - centers[j]).length - 2 * R for i in range(COUNT) for j in range(i + 1, COUNT))
+report = dict(count=COUNT, radius=R, mounting_offset=OFFSET, optical_facets=57, girdle_faces=16, closed_edges=non_manifold == 0,
     positive_volume=volume > 0, max_planarity_error=planarity, convex_error=convex_error,
     gold_intersections_by_gem=collisions, min_neighbor_bounding_sphere_gap=gap)
 assert non_manifold == 0 and volume > 0 and planarity < 1e-6 and convex_error < 1e-6

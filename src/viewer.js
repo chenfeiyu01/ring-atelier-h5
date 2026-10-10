@@ -143,7 +143,7 @@ export class RingViewer {
     this.onStatus(inlay === 'diamond' ? '正在准备钻石光影…' : '正在切换银珠…', 'fine');
     try {
       if (inlay === 'diamond' && !this.diamonds) {
-        const gltf = await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/diamond.glb`);
+        const gltf = await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/diamond.glb?v=10-large`);
         if (this.disposed) return;
         gltf.scene.updateMatrixWorld(true);
         let source;
@@ -155,14 +155,14 @@ export class RingViewer {
           transmission: 1, ior: 2.417, thickness: 0.31, attenuationDistance: 1000, clearcoat: 0, side: THREE.DoubleSide,
         });
         this.diamonds = new THREE.Group();
-        for (let i = 0; i < this.beads.length; i++) {
-          const t = 2 * Math.PI * i / this.beads.length, alpha = t - Math.PI / 2 + 0.25;
+        for (let i = 0; i < 10; i++) {
+          const t = 2 * Math.PI * i / 10, alpha = t - Math.PI / 2 + 0.25;
           const radial = new THREE.Vector3(Math.cos(t), Math.sin(t), 0), depth = new THREE.Vector3(0, 0, 1);
           const v = radial.clone().multiplyScalar(Math.cos(alpha)).addScaledVector(depth, Math.sin(alpha));
           const u = depth.clone().multiplyScalar(Math.cos(alpha)).addScaledVector(radial, -Math.sin(alpha));
           const gem = new THREE.Mesh(geometry, material);
           gem.name = `Diamond ${i + 1}`;
-          gem.position.copy(radial).multiplyScalar(1.30).addScaledVector(v, 0.075);
+          gem.position.copy(radial).multiplyScalar(1.30).addScaledVector(v, 0.22);
           gem.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(u, new THREE.Vector3().crossVectors(v, u), v));
           this.diamonds.add(gem);
         }
