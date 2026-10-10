@@ -1,0 +1,120 @@
+{
+  "solitaire": {
+    "meshes": 52,
+    "triangles": 58620,
+    "non_manifold_edges": 0,
+    "main_slots": 1,
+    "accent_slots": 18,
+    "fixed_pearls": 0,
+    "note": "Seat openings are intentional. These are display models, not manufacturing CAD."
+  },
+  "interlace": {
+    "meshes": 259,
+    "triangles": 334032,
+    "non_manifold_edges": 0,
+    "main_slots": 3,
+    "accent_slots": 126,
+    "fixed_pearls": 0,
+    "note": "Seat openings are intentional. These are display models, not manufacturing CAD.",
+    "convergence": {
+      "rails": 3,
+      "point": [
+        0,
+        -1.3,
+        0
+      ],
+      "max_centerline_gap_at_point": 0.0,
+      "min_separation_at_right_side": 0.4366209478085828,
+      "min_separation_at_left_side": 0.4366209478085828,
+      "shared_semicircular_shank": false
+    },
+    "bead_support": {
+      "beads": 3,
+      "cross_section": "equilateral triangle",
+      "rail_phase_degrees": [
+        90,
+        -30,
+        -150
+      ],
+      "rail_centerline_radius": 0.335,
+      "bead_radius": 0.31,
+      "rail_half_depth": 0.025,
+      "maximum_contact_clearance": 5.2545493511857444e-08,
+      "maximum_triangle_edge_difference": 1.055335187016837e-07,
+      "flat_pave_rails": 2,
+      "fixed_accent_inlay": "diamond",
+      "actual_surface_contacts": [
+        {
+          "bead": "Silver bead 1",
+          "contacts": [
+            {
+              "rail": "Flat pave rail",
+              "distance": 0.3100195527076721,
+              "silver_radius": 0.31,
+              "clearance": 1.955270767212136e-05
+            },
+            {
+              "rail": "Flat pave rail.001",
+              "distance": 0.31001636385917664,
+              "silver_radius": 0.31,
+              "clearance": 1.6363859176637963e-05
+            },
+            {
+              "rail": "Polished supporting rail",
+              "distance": 0.3099794089794159,
+              "silver_radius": 0.31,
+              "clearance": -2.0591020584104225e-05
+            }
+          ]
+        },
+        {
+          "bead": "Silver bead 2",
+          "contacts": [
+            {
+              "rail": "Flat pave rail",
+              "distance": 0.3100000023841858,
+              "silver_radius": 0.31,
+              "clearance": 2.384185793236071e-09
+            },
+            {
+              "rail": "Flat pave rail.001",
+              "distance": 0.309999942779541,
+              "silver_radius": 0.31,
+              "clearance": -5.7220458982154554e-08
+            },
+            {
+              "rail": "Polished supporting rail",
+              "distance": 0.30999547243118286,
+              "silver_radius": 0.31,
+              "clearance": -4.5275688171364514e-06
+            }
+          ]
+        },
+        {
+          "bead": "Silver bead 3",
+          "contacts": [
+            {
+              "rail": "Flat pave rail",
+              "distance": 0.31001803278923035,
+              "silver_radius": 0.31,
+              "clearance": 1.80327892303489e-05
+            },
+            {
+              "rail": "Flat pave rail.001",
+              "distance": 0.3100157678127289,
+              "silver_radius": 0.31,
+              "clearance": 1.5767812728884056e-05
+            },
+            {
+              "rail": "Polished supporting rail",
+              "distance": 0.3099824786186218,
+              "silver_radius": 0.31,
+              "clearance": -1.7521381378171608e-05
+            }
+          ]
+        }
+      ],
+      "maximum_actual_surface_contact_error": 2.0591020584104225e-05
+    }
+  }
+}

@@ -6,12 +6,12 @@ export function installDiamondDispersion(tracer) {
   const material = tracer._pathTracer.material;
   const sampleAnchor = 'ScatterRecord bsdfSample( vec3 worldWo, SurfaceRecord surf ) {';
   if (!material.fragmentShader.includes(sampleAnchor)) throw new Error('Unsupported BSDF shader layout');
-  // Optically polished facets use an ideal dielectric BSDF. Fresnel chooses
+  // Optically polished diamond and sapphire facets use an ideal dielectric BSDF. Fresnel chooses
   // reflection or refraction; total internal reflection is handled explicitly.
   // This also avoids the generic rough-transmission path that renders dark in WebKit.
   material.fragmentShader = material.fragmentShader.replace(sampleAnchor, `${sampleAnchor}
     #if DIAMOND_OPTICS
-    if (surf.transmission > 0.9 && surf.ior > 2.3) {
+    if (surf.transmission > 0.9 && surf.ior > 1.5) {
       vec3 incident = -normalize(worldWo);
       vec3 n = normalize(surf.normal);
       float cosI = clamp(-dot(incident, n), 0.0, 1.0);

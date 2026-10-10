@@ -8,8 +8,15 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.spinner{animation:none}}
 
 .viewport { background: #000; }
-.inlay-options{display:flex;gap:12px}.inlay-options button{flex:1;padding:12px 18px;border:1px solid var(--line);border-radius:3px;font-family:var(--serif);font-size:15px;letter-spacing:2px}.inlay-options button.selected{border-color:#9e8d5e;background:#211d14;color:var(--gold)}
-@media(max-width:700px){.inlay-setting{grid-column:1 / -1}.inlay-options{max-width:280px}.inlay-options button{padding:11px 20px;font-size:13px}}
+.inlay-options{display:flex;gap:8px}.inlay-options button{flex:1;min-width:0;white-space:nowrap;padding:12px 10px;border:1px solid var(--line);border-radius:3px;font-family:var(--serif);font-size:15px;letter-spacing:1px}.inlay-options button.selected{border-color:#9e8d5e;background:#211d14;color:var(--gold)}.inlay-options button[data-inlay="sapphire"].selected{border-color:#507ac3;background:#101e36;color:#b5ceff}
+@media(max-width:700px){.inlay-setting{grid-column:1 / -1}.inlay-options{max-width:320px}.inlay-options button{padding:11px 12px;font-size:13px}}
 
 .stage.is-initializing .viewport{opacity:0;pointer-events:none}
 .stage.is-initializing .tools,.stage.is-initializing .stage-bottom,.stage.is-initializing .render-status{visibility:hidden}
+
+.mounting-options{display:flex;gap:8px}.mounting-options button{flex:1;min-width:0;white-space:nowrap;padding:12px 6px;border:1px solid var(--line);border-radius:3px;font-family:var(--serif);font-size:14px;letter-spacing:1px}.mounting-options button.selected{border-color:#9e8d5e;background:#211d14;color:var(--gold)}
+@media(max-width:700px){.mounting-setting{grid-column:1 / -1}.mounting-options{max-width:348px}.mounting-options button{padding:11px 6px;font-size:13px}}
+
+.setting{padding-top:26px}h2{margin-bottom:16px}.view-setting{margin-top:20px}.metal-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.metal-options button{display:grid;justify-items:center;gap:9px;border:1px solid var(--line);border-radius:3px;padding:11px 2px;font-size:12px;white-space:nowrap}.metal-options button.selected{border-color:#9e8d5e;background:#211d14;color:var(--gold)}.metal-swatch{width:19px;height:19px;border-radius:50%;border:1px solid #b0a995;background:linear-gradient(135deg,#fff 5%,#c9bf9c 22%,#574622 48%,#e3d7b4 79%,#fff)}.metal-yellow{background:linear-gradient(135deg,#fff5d2 5%,#e6c576 22%,#705727 48%,#f7db99 79%,#ffefd0)}.metal-white{background:linear-gradient(135deg,#fff 5%,#ddd 22%,#6d6d6b 48%,#efefec 79%,#fff)}.metal-rose{background:linear-gradient(135deg,#ffe9dc 5%,#d7a493 22%,#7e4e42 48%,#efc4b4 79%,#fff0e9)}.metal-platinum{background:linear-gradient(135deg,#e9e8e5 5%,#b8b5ae 22%,#5c5a55 48%,#d4d1c9 79%,#f3f1eb)}.inlay-options.is-single{justify-content:flex-start}.inlay-options.is-single button{flex:0 0 96px}.inlay-options button[hidden]{display:none}
+@media(max-width:1000px) and (min-width:701px){.metal-options{grid-template-columns:repeat(2,minmax(0,1fr))}.metal-options button{display:flex;justify-content:center;padding:10px 4px;gap:8px}.metal-swatch{width:16px;height:16px}.setting{padding-top:22px}}
+@media(max-width:700px){.setting{padding-top:0}.metal-setting{grid-column:1 / -1}.metal-options{max-width:348px}.metal-options button{padding:11px 2px}.view-setting{margin-top:0}}

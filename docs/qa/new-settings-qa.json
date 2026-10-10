@@ -1,0 +1,1085 @@
+{
+  "url": "http://localhost:5186/?capture=1",
+  "checks": [
+    {
+      "diagnostics": {
+        "accentInlayCount": 18,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 72.1,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -3.6000000000000005,
+          4.1,
+          5.1
+        ],
+        "frames": 109,
+        "historySeeds": 12,
+        "inlay": "diamond",
+        "lighting": "black",
+        "mainInlayCount": 1,
+        "metal": "platinum",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "铂金",
+            "reflectance": [
+              0.673,
+              0.637,
+              0.585
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 1,
+        "mounting": "solitaire",
+        "pathTracedFrames": 105,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver",
+          "diamond",
+          "sapphire"
+        ],
+        "temporalFrames": 16,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "false"
+        },
+        {
+          "name": "钻石",
+          "selected": "true"
+        },
+        {
+          "name": "蓝宝石",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "solitaire-default"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 154.97000000000008,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -4.699999999999998,
+          1.8999999999999992,
+          5.9999999999999964
+        ],
+        "frames": 218,
+        "historySeeds": 12,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "platinum",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "铂金",
+            "reflectance": [
+              0.673,
+              0.637,
+              0.585
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 6,
+        "mounting": "interlace",
+        "pathTracedFrames": 214,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 20,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "status": "精细光影已完成",
+      "label": "interlace-default"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 115.46428571428598,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -4.699999999999998,
+          1.8999999999999992,
+          5.9999999999999964
+        ],
+        "frames": 326,
+        "historySeeds": 24,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "yellow",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "18K 黄金",
+            "reflectance": [
+              0.991,
+              0.786,
+              0.44
+            ],
+            "roughness": 0.12
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 10,
+        "mounting": "interlace",
+        "pathTracedFrames": 322,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 39,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "true"
+        },
+        {
+          "name": "白金",
+          "selected": "false"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "tri-rail-yellow",
+      "screenshot": "tri-rail-yellow.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 93.43888888888958,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -4.699999999999998,
+          1.8999999999999992,
+          5.9999999999999964
+        ],
+        "frames": 434,
+        "historySeeds": 36,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "rose",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "玫瑰金",
+            "reflectance": [
+              0.96,
+              0.65,
+              0.56
+            ],
+            "roughness": 0.12
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 14,
+        "mounting": "interlace",
+        "pathTracedFrames": 430,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 58,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "false"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "true"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "tri-rail-rose",
+      "screenshot": "tri-rail-rose.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 76.03043478260936,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -4.699999999999998,
+          1.8999999999999992,
+          5.9999999999999964
+        ],
+        "frames": 543,
+        "historySeeds": 48,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 19,
+        "mounting": "interlace",
+        "pathTracedFrames": 539,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 78,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "tri-rail-white",
+      "screenshot": "tri-rail-white.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 18,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 69.98275862069028,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -3.6000000000000005,
+          4.1,
+          5.1
+        ],
+        "frames": 653,
+        "historySeeds": 12,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 1,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 25,
+        "mounting": "solitaire",
+        "pathTracedFrames": 649,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver",
+          "diamond",
+          "sapphire"
+        ],
+        "temporalFrames": 21,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        },
+        {
+          "name": "钻石",
+          "selected": "false"
+        },
+        {
+          "name": "蓝宝石",
+          "selected": "false"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "solitaire-silver-white",
+      "screenshot": "solitaire-silver-white.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 18,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 63.011111111111454,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -3.6000000000000005,
+          4.1,
+          5.1
+        ],
+        "frames": 764,
+        "historySeeds": 12,
+        "inlay": "sapphire",
+        "lighting": "black",
+        "mainInlayCount": 1,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 32,
+        "mounting": "solitaire",
+        "pathTracedFrames": 760,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver",
+          "diamond",
+          "sapphire"
+        ],
+        "temporalFrames": 22,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "false"
+        },
+        {
+          "name": "钻石",
+          "selected": "false"
+        },
+        {
+          "name": "蓝宝石",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "solitaire-sapphire-white",
+      "screenshot": "solitaire-sapphire-white.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 0,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 81.45000000000046,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -4.699999999999998,
+          1.8999999999999992,
+          5.9999999999999964
+        ],
+        "frames": 872,
+        "historySeeds": 12,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 20,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 35,
+        "mounting": "ribbon",
+        "pathTracedFrames": 867,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 18,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "ribbon-silver-white",
+      "screenshot": "ribbon-silver-white.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 89.49600000000014,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          8.1,
+          0.5999999999999993,
+          0.6999999999999995
+        ],
+        "frames": 991,
+        "historySeeds": 12,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 43,
+        "mounting": "interlace",
+        "pathTracedFrames": 984,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 28,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "tri-rail-side",
+      "screenshot": "tri-rail-side.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 82.57636363636365,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          0,
+          5.021051876504147e-16,
+          8.2
+        ],
+        "frames": 1100,
+        "historySeeds": 24,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 48,
+        "mounting": "interlace",
+        "pathTracedFrames": 1093,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {},
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 48,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "tri-rail-front",
+      "screenshot": "tri-rail-front.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 22.968421053259306,
+        "buffer": [
+          848,
+          597
+        ],
+        "calls": 1,
+        "camera": [
+          -5.507780406063526,
+          2.995926414108304,
+          2.2950010718583114
+        ],
+        "frames": 1278,
+        "historySeeds": 38,
+        "inlay": "silver",
+        "lighting": "soft",
+        "mainInlayCount": 3,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 0.9737232209257124,
+        "motionTraceFrames": 72,
+        "mounting": "interlace",
+        "pathTracedFrames": 1271,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {
+          "1": 67,
+          "4": 107,
+          "8": 160,
+          "16": 294,
+          "24": 374,
+          "32": 1431,
+          "192": 4613
+        },
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 131,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 1280,
+      "status": "精细光影已完成",
+      "width": 1280,
+      "label": "tri-rail-drag-soft",
+      "screenshot": "tri-rail-drag-soft.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 126,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 23.43823529446843,
+        "buffer": [
+          388,
+          443
+        ],
+        "calls": 1,
+        "camera": [
+          -4.699999999999998,
+          1.8999999999999992,
+          5.9999999999999964
+        ],
+        "frames": 1429,
+        "historySeeds": 51,
+        "inlay": "silver",
+        "lighting": "black",
+        "mainInlayCount": 3,
+        "metal": "white",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "白金（白色黄金，镀铑）",
+            "reflectance": [
+              0.8,
+              0.8,
+              0.79
+            ],
+            "roughness": 0.11
+          }
+        ],
+        "motionScale": 1,
+        "motionTraceFrames": 87,
+        "mounting": "interlace",
+        "pathTracedFrames": 1422,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {
+          "1": 67,
+          "4": 107,
+          "8": 160,
+          "16": 294,
+          "24": 374,
+          "32": 1431,
+          "192": 4613
+        },
+        "samples": 192,
+        "supportedInlays": [
+          "silver"
+        ],
+        "temporalFrames": 190,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "true"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "false"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 390,
+      "status": "精细光影已完成",
+      "width": 390,
+      "label": "tri-rail-mobile",
+      "screenshot": "tri-rail-mobile.png"
+    },
+    {
+      "diagnostics": {
+        "accentInlayCount": 18,
+        "appleWebKit": false,
+        "autoRotate": false,
+        "averageFrameMs": 25.435714285926224,
+        "buffer": [
+          388,
+          443
+        ],
+        "calls": 1,
+        "camera": [
+          -3.6000000000000005,
+          4.1,
+          5.1
+        ],
+        "frames": 1782,
+        "historySeeds": 24,
+        "inlay": "sapphire",
+        "lighting": "black",
+        "mainInlayCount": 1,
+        "metal": "rose",
+        "metalMaterials": [
+          {
+            "clearcoat": 0,
+            "metalness": 1,
+            "name": "玫瑰金",
+            "reflectance": [
+              0.96,
+              0.65,
+              0.56
+            ],
+            "roughness": 0.12
+          }
+        ],
+        "motionScale": 1,
+        "motionTraceFrames": 109,
+        "mounting": "solitaire",
+        "pathTracedFrames": 1775,
+        "quality": "fine",
+        "rasterFrames": 0,
+        "ready": true,
+        "recoveryTimes": {
+          "1": 67,
+          "4": 107,
+          "8": 160,
+          "16": 294,
+          "24": 374,
+          "32": 1431,
+          "192": 4613
+        },
+        "samples": 192,
+        "supportedInlays": [
+          "silver",
+          "diamond",
+          "sapphire"
+        ],
+        "temporalFrames": 41,
+        "triangles": 1
+      },
+      "inlays": [
+        {
+          "name": "银珠",
+          "selected": "false"
+        },
+        {
+          "name": "钻石",
+          "selected": "false"
+        },
+        {
+          "name": "蓝宝石",
+          "selected": "true"
+        }
+      ],
+      "metals": [
+        {
+          "name": "18K 黄金",
+          "selected": "false"
+        },
+        {
+          "name": "白金",
+          "selected": "false"
+        },
+        {
+          "name": "玫瑰金",
+          "selected": "true"
+        },
+        {
+          "name": "铂金",
+          "selected": "false"
+        }
+      ],
+      "scrollWidth": 390,
+      "status": "精细光影已完成",
+      "width": 390,
+      "label": "solitaire-sapphire-mobile-rose",
+      "screenshot": "solitaire-sapphire-mobile-rose.png"
+    }
+  ],
+  "scope": "Local desktop Chromium and 390x844 viewport. No GitHub commit or deployment; no physical-phone or fresh Safari acceptance.",
+  "production_preview": {
+    "url": "http://localhost:5187/",
+    "status": "精细光影已完成",
+    "mounting": "interlace",
+    "metal": "yellow",
+    "visible_inlays": [
+      "silver"
+    ],
+    "width": 390,
+    "scrollWidth": 390,
+    "console_errors": [],
+    "console_warnings": [],
+    "initial_loading_hides_model_and_disables_controls": true
+  },
+  "geometry_validation": "../mounting-validation.json"
+}

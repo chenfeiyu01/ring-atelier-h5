@@ -1,0 +1,40 @@
+{
+  "count": 20,
+  "dimensions": [
+    0.25,
+    0.36,
+    0.16
+  ],
+  "mounting_offset": 0.1,
+  "cut": "independent oval step cut",
+  "optical_facets": 65,
+  "girdle_faces": 16,
+  "triangles": 158,
+  "closed_edges": true,
+  "positive_volume": true,
+  "max_planarity_error": 1.4901161193847656e-08,
+  "convex_error": 1.4901161193847656e-08,
+  "gold_intersections_by_gem": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "min_neighbor_bounding_sphere_gap": 0.017260513851535653
+}
