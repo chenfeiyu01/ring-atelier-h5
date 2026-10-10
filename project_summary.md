@@ -12,7 +12,7 @@
 - src/diamond-optics.js：固定版追踪器的钻石介质与三波段色散分支。
 - src/motion-denoise.js：几何重投影、历史积累与边界保护。
 - src/studio.js：自生成 HDR 摄影棚；钻石增加小型中性灯板。
-- src/main.js / src/style.css：桌面和 H5 布局、控件与原片。
+- src/main.js / src/style.css：桌面和 H5 布局及控件。已移除品牌 LOGO、宣传标题、原片入口和页脚，仅保留模型、操作提示与必要设置。
 - scripts/build_ring.py / build_diamond.py：Blender 模型生成。
 - models/*.blend、public/models/*.glb：编辑源及网页模型。
 - docs/model-validation.json、diamond-validation.json、qa/：几何、画面与性能证据。

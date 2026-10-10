@@ -28,7 +28,7 @@ export class RingViewer {
       console.error('Ring shader failed', gl.getProgramInfoLog(program),
         gl.getShaderInfoLog(vertexShader), gl.getShaderInfoLog(fragmentShader));
       this.failed = true; this.suspended = true;
-      this.onStatus('精细光影加载失败，请刷新重试；也可查看原片。', 'error');
+      this.onStatus('精细光影加载失败，请刷新重试。', 'error');
     };
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.1;
