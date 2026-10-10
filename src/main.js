@@ -7,9 +7,9 @@ const icon = (name) => {
 const embedded = new URLSearchParams(location.search).get('embed') === '1';
 document.body.classList.toggle('embedded', embedded);
 document.querySelector('#app').innerHTML = `
-<main class="workspace">
-  <section class="stage" aria-label="戒指交互展示">
-    <div id="viewport" class="viewport"></div>
+<main class="workspace" aria-busy="true">
+  <section class="stage is-initializing" aria-label="戒指交互展示">
+    <div id="viewport" class="viewport" aria-hidden="true" inert></div>
     <div class="loading" id="loading" role="status"><span class="spinner"></span><span>正在加载戒指…</span></div>
     <div class="tools" role="group" aria-label="查看工具"><button id="zoom-in" aria-label="放大" title="放大">${icon('plus')}</button><button id="zoom-out" aria-label="缩小" title="缩小">${icon('minus')}</button><button id="reset" aria-label="重置视角" title="重置视角">${icon('reset')}</button></div>
     <div class="stage-bottom"><p class="gesture"><span class="desktop-hint">拖拽旋转 · 滚轮缩放</span><span class="mobile-hint">单指旋转 · 双指缩放</span></p></div>
@@ -25,11 +25,32 @@ document.querySelector('#app').innerHTML = `
 const $ = s => document.querySelector(s);
 const setSelected = (selector, el) => document.querySelectorAll(selector).forEach(b => { b.classList.toggle('selected', b === el); b.setAttribute('aria-pressed', String(b === el)); });
 let viewer;
+let initialFrameShown = false;
+document.querySelectorAll('.workspace button').forEach(button => { button.disabled = true; });
 try {
   viewer = new RingViewer($('#viewport'), {
     onStatus: (message, type) => {
-      if (type === 'loading' && !viewer?.ready || type === 'error') { $('#loading').hidden = false; $('#loading').lastElementChild.textContent = message; if (type === 'error') $('#loading').classList.add('failed'); }
-      else { $('#loading').hidden = true; $('#render-status').textContent = message; }
+      if (type === 'error') {
+        $('#loading').hidden = false;
+        $('#loading').lastElementChild.textContent = message;
+        $('#loading').classList.add('failed');
+        return;
+      }
+      if (!initialFrameShown) {
+        if (type !== 'complete') {
+          $('#loading').hidden = false;
+          $('#loading').lastElementChild.textContent = message || '正在计算精细光影…';
+          return;
+        }
+        initialFrameShown = true;
+        $('.stage').classList.remove('is-initializing');
+        $('.workspace').setAttribute('aria-busy', 'false');
+        $('#viewport').removeAttribute('aria-hidden');
+        $('#viewport').removeAttribute('inert');
+        document.querySelectorAll('.workspace button').forEach(button => { button.disabled = false; });
+      }
+      $('#loading').hidden = true;
+      $('#render-status').textContent = message;
     },
     onInteraction: () => setSelected('[data-view]', null),
   });

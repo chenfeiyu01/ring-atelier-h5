@@ -47,7 +47,10 @@ export class RingViewer {
     this.controls.minDistance = 3.9; this.controls.maxDistance = 14;
     this.controls.autoRotate = false;
     this.controls.addEventListener('change', () => this.invalidate());
-    this.controls.addEventListener('start', () => { this.onInteraction(); });
+    this.controls.addEventListener('start', () => {
+      this.onInteraction();
+      if (import.meta.env.DEV) { this.frameTimes = []; this.lastTick = performance.now(); }
+    });
     if (import.meta.env.DEV) this.controls.addEventListener('end', () => {
       this.releasedAt = performance.now(); this.recoveryTimes = {};
     });
@@ -282,7 +285,7 @@ export class RingViewer {
         }
       }
       const status = this.tracer.isCompiling ? '正在准备精细光影…' : !idle ? '实时精细光影' : samples >= FINAL_SAMPLES ? '精细光影已完成' : `光影细化中 ${Math.min(100, Math.floor(samples / FINAL_SAMPLES * 100))}%`;
-      if (status !== this.lastStatus) { this.onStatus(status, 'fine'); this.lastStatus = status; }
+      if (status !== this.lastStatus) { this.onStatus(status, idle && !this.tracer.isCompiling && samples >= FINAL_SAMPLES ? 'complete' : 'fine'); this.lastStatus = status; }
     }
     if (dt > 0 && !idle) {
       this.frameTimes.push(rawFrameMs); if (this.frameTimes.length > 120) this.frameTimes.shift();
