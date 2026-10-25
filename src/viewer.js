@@ -3,9 +3,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createStudio } from './studio.js';
-import { MotionDenoiser } from './motion-denoise.js';
+import { JewelryPreview } from './jewelry-preview.js';
 import { installDiamondDispersion, setDiamondOpticsEnabled } from './diamond-optics.js';
 const FINAL_SAMPLES = 192;
+const SETTLE_DELAY = 180;
 const MOUNTINGS = {
   solitaire: { asset: 'solitaire.glb', label: '四爪单石', hero: [-3.6, 4.1, 5.1], inlays: ['silver', 'diamond', 'sapphire'] },
   interlace: { asset: 'interlace.glb', label: '三线抱珠', hero: [-4.7, 1.9, 6.0], inlays: ['silver'] },
@@ -37,6 +38,7 @@ export class RingViewer {
     this.mountings = new Map(); this.gemGeometries = new Map(); this.inlayMaterials = new Map();
     this.lastChange = 0; this.dirty = true; this.frameCount = 0; this.frameTimes = [];
     this.rasterFrames = 0; this.pathTracedFrames = 0; this.motionTraceFrames = 0;
+    this.previewDirty = true; this.displayMode = 'preview'; this.refinementBlend = 0;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance',
       // Optional development capture keeps idle WebGL pixels available to screenshots.
       preserveDrawingBuffer: import.meta.env.DEV && new URLSearchParams(location.search).has('capture'),
@@ -58,6 +60,7 @@ export class RingViewer {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x000000);
     this.camera = new THREE.PerspectiveCamera(32, 1, 0.1, 80);
+    this.preview = new JewelryPreview(this.renderer, this.canvas.width, this.canvas.height);
     this.controls = new OrbitControls(this.camera, this.canvas);
     // Accumulate immediately at the released pose instead of resetting through a long inertial tail.
     this.controls.enableDamping = false;
@@ -66,11 +69,13 @@ export class RingViewer {
     this.controls.autoRotate = false;
     this.controls.addEventListener('change', () => this.invalidate());
     this.controls.addEventListener('start', () => {
+      this.interacting = true;
       this.onInteraction();
       if (import.meta.env.DEV) { this.frameTimes = []; this.lastTick = performance.now(); }
     });
-    if (import.meta.env.DEV) this.controls.addEventListener('end', () => {
-      this.releasedAt = performance.now(); this.recoveryTimes = {};
+    this.controls.addEventListener('end', () => {
+      this.interacting = false;
+      if (import.meta.env.DEV) { this.releasedAt = performance.now(); this.recoveryTimes = {}; }
     });
     this.keyHandler = e => {
       if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '-', '=', 'Home'].includes(e.key)) return;
@@ -102,6 +107,7 @@ export class RingViewer {
     this.model = setting.root;
     this.applyInlay(setting);
     this.scene.add(this.model); this.setLighting(this.lighting); this.scene.updateMatrixWorld(true);
+    this.preview.setModel(this.model);
     await this.prepareFine();
     if (this.disposed) return;
     this.ready = true; this.invalidate(); this.onStatus('', 'ready');
@@ -210,7 +216,8 @@ export class RingViewer {
     this.metal = metal;
     this.mountings.forEach(setting => this.applyMetal(setting));
     this.tracer?.updateMaterials();
-    this.motionDenoiser?.reset(); this.lastStatus = null; this.invalidate();
+    this.preview.history.reset();
+    this.lastStatus = null; this.invalidate();
   }
   applyInlay(setting) {
     setting.beads.forEach(o => { o.visible = this.inlay === 'silver'; });
@@ -226,8 +233,7 @@ export class RingViewer {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8, Math.sqrt(2200000 / (width * height))));
     this.renderer.setSize(width, height);
     if (this.fineTarget) this.fineTarget.setSize(this.canvas.width, this.canvas.height);
-    this.motionDenoiser?.resize(this.canvas.width, this.canvas.height);
-    if (this.tracer) this.tracer.lowResScale = this.motionResolutionScale();
+    this.preview?.resize(this.canvas.width, this.canvas.height);
     this.camera.aspect = width / height;
     // Preserve comfortable margins in tall and narrow H5 containers.
     this.camera.fov = width / height < 0.85 ? 36 : 32;
@@ -235,12 +241,9 @@ export class RingViewer {
   }
   invalidate() {
     this.lastChange = performance.now(); this.dirty = true;
+    this.previewDirty = true; this.refinementBlend = 0;
+    this.historyCaptured = false;
     if (this.tracer) this.tracer.updateCamera();
-  }
-  motionResolutionScale() {
-    // Keep the same eight-bounce light transport while reducing the number of
-    // traced pixels during interaction. Full resolution still converges at rest.
-    return THREE.MathUtils.clamp(Math.sqrt(480000 / (this.canvas.width * this.canvas.height)), 0.4, 1);
   }
   setView(view) {
     const positions = { hero: MOUNTINGS[this.mounting].hero, front: [0, 0, 8.2], side: [8.1, 0.6, 0.7] };
@@ -258,9 +261,18 @@ export class RingViewer {
     if (!this.environments.has(key)) this.environments.set(key, createStudio(preset, this.hasOpticalGems()));
     this.scene.environment = this.environments.get(key);
     this.scene.background.set(preset === 'soft' ? 0x171717 : 0x000000);
-    if (this.tracer) this.tracer.updateEnvironment();
-    this.motionDenoiser?.reset();
+    this.preview.setEnvironment(this.scene.environment, this.scene.background);
+    if (this.tracer) { this.tracer.updateEnvironment(); this.configureBackgroundFiltering(); }
     this.invalidate();
+  }
+  configureBackgroundFiltering() {
+    // The pinned tracer generates a Float32 background gradient with linear
+    // filtering, even when that optional WebGL extension is unavailable.
+    const background = this.tracer._pathTracer.material.backgroundMap;
+    if (background?.type === THREE.FloatType && !this.renderer.extensions.has('OES_texture_float_linear')) {
+      background.minFilter = background.magFilter = THREE.NearestFilter;
+      background.needsUpdate = true;
+    }
   }
   async setInlay(inlay) {
     if (!this.ready || this.changingModel || inlay === this.inlay || !this.supportedInlays.includes(inlay)) return;
@@ -296,13 +308,11 @@ export class RingViewer {
     this.scene.updateMatrixWorld(true); this.setLighting(this.lighting);
     setDiamondOpticsEnabled(this.tracer, this.hasOpticalGems());
     this.tracer.setScene(this.scene, this.camera);
-    this.motionDenoiser.dispose();
-    this.motionDenoiser = new MotionDenoiser(this.model, this.canvas.width, this.canvas.height);
+    this.preview.setModel(this.model);
     this.lastStatus = null; this.invalidate();
   }
   async prepareFine() {
     this.lastStatus = null;
-    this.motionDenoiser?.reset();
     if (!this.tracer) {
       if (!this.renderer.extensions.has('EXT_color_buffer_float')) throw new Error('当前设备不支持精细光影，请使用支持 WebGL 2 浮点渲染的浏览器');
       this.onStatus('正在准备精细光影…', 'loading');
@@ -318,15 +328,13 @@ export class RingViewer {
       // The diamond's small panels are also reached by these specular paths.
       this.tracer.multipleImportanceSampling = false;
       // One full sample per frame: nine tiles previously consumed nine RAF ticks.
-      this.tracer.tiles.set(1, 1); this.tracer.renderDelay = 0; this.tracer.fadeDuration = 80;
+      this.tracer.tiles.set(1, 1); this.tracer.renderDelay = 0; this.tracer.fadeDuration = 0;
       this.tracer.minSamples = 1; this.tracer.renderScale = 1;
-      this.tracer.dynamicLowRes = true;
-      this.tracer.lowResScale = this.motionResolutionScale();
-      // Independent samples allow temporal history to remove noise while moving.
+      this.tracer.dynamicLowRes = false;
+      this.tracer.renderToCanvas = false;
       this.tracer.stableNoise = false;
       this.tracer.rasterizeScene = false;
-      // The library also invokes this callback during shader compilation.
-      // Retain the last frame then; never switch the fine mode to raster lighting.
+      // The stable preview remains visible while the path-tracer shader compiles.
       this.tracer.rasterizeSceneCallback = () => {};
       this.tracer.textureSize.set(512, 512);
       this.fineTarget = new THREE.WebGLRenderTarget(this.canvas.width, this.canvas.height, {
@@ -334,43 +342,46 @@ export class RingViewer {
         depthBuffer: false, stencilBuffer: false,
       });
       this.fineTarget.texture.colorSpace = THREE.LinearSRGBColorSpace;
-      this.motionDenoiser = new MotionDenoiser(this.model, this.canvas.width, this.canvas.height);
       this.denoiseMaterial = new DenoiseMaterial({ sigma: 2, kSigma: 1, threshold: 0.14 });
       this.denoiseQuad = new FullScreenQuad(this.denoiseMaterial);
       this.tracer.setScene(this.scene, this.camera);
+      this.configureBackgroundFiltering();
     }
     this.invalidate();
   }
-  renderFineFrame(moving) {
-    // Composite both the interactive and accumulating path-traced buffers in
-    // linear HDR, then denoise and tone-map once. The library's low-res preview
-    // bypasses renderToCanvasCallback, so a final pass must cover both buffers.
+  renderPreviewFrame() {
+    if (this.previewDirty) {
+      this.preview.render(this.camera);
+      this.previewDirty = false; this.rasterFrames++;
+    }
+    this.preview.display();
+    this.displayMode = 'preview'; this.refinementBlend = 0;
+  }
+  renderFineFrame() {
+    // Accumulate offscreen; never expose the tracer's noisy first samples.
+    // Blend linear HDR radiance and apply the same exposure/tone mapping once.
     const previousTarget = this.renderer.getRenderTarget();
-    // The dynamic low-resolution tracer still runs; avoid tracing both buffers during movement.
-    this.tracer.pausePathTracing = moving;
-    this.tracer.renderToCanvas = moving || this.tracer.samples < 16;
-    this.renderer.setRenderTarget(this.fineTarget);
-    const batch = !moving && this.tracer.samples >= 16
-      ? Math.min(2, FINAL_SAMPLES - this.tracer.samples) : 1;
+    const batch = this.tracer.samples >= 16 ? Math.min(2, FINAL_SAMPLES - this.tracer.samples) : 1;
     for (let sample = 0; sample < batch; sample++) this.tracer.renderSample();
-    this.renderer.setRenderTarget(previousTarget);
-    if (this.tracer.isCompiling) return;
-    if (this.tracer.samples < 16) {
-      this.motionDenoiser.render(this.renderer, this.camera, this.fineTarget.texture,
-        this.scene.background, this.tracer.lowResScale);
+    const samples = this.tracer.samples;
+    if (samples < 32 || this.tracer.isCompiling) {
+      this.renderPreviewFrame();
     } else {
-      // Use the original full-resolution radiance directly for the settled image.
       const refinement = THREE.MathUtils.smoothstep(this.tracer.samples, 32, 128);
       this.denoiseMaterial.sigma = THREE.MathUtils.lerp(2, 1.25, refinement);
       this.denoiseMaterial.threshold = THREE.MathUtils.lerp(0.14, 0.10, refinement);
       this.denoiseMaterial.map = this.tracer.target.texture;
+      this.renderer.setRenderTarget(this.fineTarget);
       this.denoiseQuad.render(this.renderer);
-      if (this.tracer.samples % 16 === 0 || this.tracer.samples >= FINAL_SAMPLES) {
-        this.motionDenoiser.seed(this.renderer, this.camera, this.tracer.target.texture, this.tracer.samples);
+      this.renderer.setRenderTarget(previousTarget);
+      this.refinementBlend = refinement;
+      this.preview.display(this.fineTarget.texture, refinement);
+      this.displayMode = refinement < 1 ? 'refining' : 'path-traced';
+      if (samples >= FINAL_SAMPLES && !this.historyCaptured) {
+        this.preview.captureHistory(this.camera, this.fineTarget.texture); this.historyCaptured = true;
       }
     }
     this.pathTracedFrames++;
-    if (moving) this.motionTraceFrames++;
   }
   tick(now) {
     if (this.disposed) return;
@@ -383,12 +394,14 @@ export class RingViewer {
     }
     this.controls.update(dt);
     if (!this.ready) return;
-    const idle = now - this.lastChange > 65;
+    const idle = !this.interacting && now - this.lastChange > SETTLE_DELAY;
     if (this.tracer) {
-      if (!idle || this.tracer.samples < FINAL_SAMPLES || this.dirty) {
-        this.renderFineFrame(!idle);
+      const firstFrame = !this.hasShownFrame;
+      if (this.dirty || (idle && this.tracer.samples < FINAL_SAMPLES)) {
+        if (!idle) this.renderPreviewFrame();
+        else this.renderFineFrame();
         if (this.suspended) return;
-        this.dirty = false; this.frameCount++;
+        this.dirty = false; this.frameCount++; this.hasShownFrame = true;
       }
       const samples = Math.floor(this.tracer.samples);
       if (import.meta.env.DEV && this.releasedAt) {
@@ -396,8 +409,9 @@ export class RingViewer {
           if (samples >= milestone && !this.recoveryTimes[milestone]) this.recoveryTimes[milestone] = Math.round(now - this.releasedAt);
         }
       }
-      const status = this.tracer.isCompiling ? '正在准备精细光影…' : !idle ? '实时精细光影' : samples >= FINAL_SAMPLES ? '精细光影已完成' : `光影细化中 ${Math.min(100, Math.floor(samples / FINAL_SAMPLES * 100))}%`;
-      if (status !== this.lastStatus) { this.onStatus(status, idle && !this.tracer.isCompiling && samples >= FINAL_SAMPLES ? 'complete' : 'fine'); this.lastStatus = status; }
+      const status = firstFrame || !idle ? '实时光影' : samples >= FINAL_SAMPLES ? '精细光影已完成' : `光影细化中 ${Math.min(100, Math.floor(samples / FINAL_SAMPLES * 100))}%`;
+      const type = firstFrame || !idle ? 'preview' : samples >= FINAL_SAMPLES ? 'complete' : 'fine';
+      if (status !== this.lastStatus) { this.onStatus(status, type); this.lastStatus = status; }
     }
     if (dt > 0 && !idle) {
       this.frameTimes.push(rawFrameMs); if (this.frameTimes.length > 120) this.frameTimes.shift();
@@ -411,17 +425,22 @@ export class RingViewer {
       accentInlayCount: inlays.filter(mesh => mesh.userData.inlayRole === 'accent').length,
       triangles: this.renderer.info.render.triangles, calls: this.renderer.info.render.calls, frames: this.frameCount,
       camera: this.camera.position.toArray(), autoRotate: this.controls.autoRotate,
-      buffer: [this.canvas.width, this.canvas.height], motionScale: this.tracer?.lowResScale || 0,
+      buffer: [this.canvas.width, this.canvas.height], displayMode: this.displayMode, refinementBlend: this.refinementBlend,
+      previewGems: this.preview.gemCount || 0,
+      previewDrawCalls: this.preview.drawCalls || 0,
+      surfaceHistoryValid: this.preview.history.valid,
+      surfaceHistoryWeight: this.preview.history.uniforms.surfaceHistoryWeight.value,
+      reflectionBuffer: this.preview.reflections ? [this.preview.reflections.target.width, this.preview.reflections.target.height] : [],
+      gpuMemory: { ...this.renderer.info.memory },
       rasterFrames: this.rasterFrames, pathTracedFrames: this.pathTracedFrames, motionTraceFrames: this.motionTraceFrames,
       recoveryTimes: this.recoveryTimes || {},
-      temporalFrames: this.motionDenoiser?.temporalFrames || 0,
-      historySeeds: this.motionDenoiser?.seedFrames || 0,
       averageFrameMs: this.frameTimes.reduce((a,b)=>a+b,0) / (this.frameTimes.length || 1) };
   }
   dispose() {
     this.disposed = true; cancelAnimationFrame(this.raf); this.observer.disconnect(); this.controls.dispose();
     this.canvas.removeEventListener('keydown', this.keyHandler); this.canvas.removeEventListener('webglcontextlost', this.lostHandler);
-    this.tracer?.dispose(); this.fineTarget?.dispose(); this.motionDenoiser?.dispose(); this.denoiseMaterial?.dispose(); this.denoiseQuad?.dispose(); this.environments?.forEach(x=>x.dispose());
+    this.tracer?.dispose(); this.tracer?._lowResPathTracer.dispose();
+    this.fineTarget?.dispose(); this.preview.dispose(); this.denoiseMaterial?.dispose(); this.denoiseQuad?.dispose(); this.environments?.forEach(x=>x.dispose());
     const geometries = new Set(), materials = new Set();
     this.mountings.forEach(setting => setting.root.traverse(o => { if (o.isMesh) { geometries.add(o.geometry); materials.add(o.material); } }));
     this.gemGeometries.forEach(geometry => geometries.add(geometry));
