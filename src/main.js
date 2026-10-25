@@ -45,7 +45,7 @@ try {
         return;
       }
       if (!initialFrameShown) {
-        if (type !== 'complete') {
+        if (type !== 'preview' && type !== 'complete') {
           $('#loading').hidden = false;
           $('#loading').lastElementChild.textContent = message || '正在计算精细光影…';
           return;

@@ -38,6 +38,9 @@ export function createStudio(preset = 'black', diamond = false) {
   const texture = new THREE.DataTexture(data,width,height,THREE.RGBAFormat,THREE.FloatType);
   texture.mapping = THREE.EquirectangularReflectionMapping;
   texture.colorSpace = THREE.LinearSRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.wrapS = THREE.RepeatWrapping;
   texture.needsUpdate = true;
   return texture;
 }
