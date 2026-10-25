@@ -216,6 +216,7 @@ export class RingViewer {
     this.metal = metal;
     this.mountings.forEach(setting => this.applyMetal(setting));
     this.tracer?.updateMaterials();
+    this.preview.history.reset();
     this.lastStatus = null; this.invalidate();
   }
   applyInlay(setting) {
@@ -241,6 +242,7 @@ export class RingViewer {
   invalidate() {
     this.lastChange = performance.now(); this.dirty = true;
     this.previewDirty = true; this.refinementBlend = 0;
+    this.historyCaptured = false;
     if (this.tracer) this.tracer.updateCamera();
   }
   setView(view) {
@@ -375,6 +377,9 @@ export class RingViewer {
       this.refinementBlend = refinement;
       this.preview.display(this.fineTarget.texture, refinement);
       this.displayMode = refinement < 1 ? 'refining' : 'path-traced';
+      if (samples >= FINAL_SAMPLES && !this.historyCaptured) {
+        this.preview.captureHistory(this.camera, this.fineTarget.texture); this.historyCaptured = true;
+      }
     }
     this.pathTracedFrames++;
   }
@@ -423,6 +428,9 @@ export class RingViewer {
       buffer: [this.canvas.width, this.canvas.height], displayMode: this.displayMode, refinementBlend: this.refinementBlend,
       previewGems: this.preview.gemCount || 0,
       previewDrawCalls: this.preview.drawCalls || 0,
+      surfaceHistoryValid: this.preview.history.valid,
+      surfaceHistoryWeight: this.preview.history.uniforms.surfaceHistoryWeight.value,
+      reflectionBuffer: this.preview.reflections ? [this.preview.reflections.target.width, this.preview.reflections.target.height] : [],
       gpuMemory: { ...this.renderer.info.memory },
       rasterFrames: this.rasterFrames, pathTracedFrames: this.pathTracedFrames, motionTraceFrames: this.motionTraceFrames,
       recoveryTimes: this.recoveryTimes || {},
